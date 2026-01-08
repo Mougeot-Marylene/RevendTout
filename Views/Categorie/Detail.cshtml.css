@@ -1,0 +1,34 @@
+﻿/* ============================= */
+/* TITRE */
+/* ============================= */
+h1 {
+    text-align: center;
+    border: 1px solid var(--couleur_verte);
+    border-radius: 5px 5px 0 0;
+    padding: 10px;
+}
+
+/* ============================= */
+/* CONTENEUR GLOBAL */
+/* ============================= */
+.cont_cat {
+    display: flex;
+    gap: 60px;
+    margin-top: 30px;
+    align-items: flex-start;
+}
+
+/* ============================= */
+/* CARD PRODUIT  */
+/* ============================= */
+.card {
+    flex: 1; /* prend moins de place */
+    border: 1px solid var(--couleur_verte);
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.card h4 {
+    margin-top: 0;
+}
+

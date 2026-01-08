@@ -1,0 +1,36 @@
+﻿@using RevendTout.ViewModels
+@model EditionCategorieViewModel
+
+@{
+    ViewData["Title"] = "Ajouter une catégorie";
+}
+
+<h1>Ajout d'une catégorie</h1>
+<br />
+
+<div class="cont_prod">
+
+    <form asp-controller="Categorie" asp-action="Nouveau" method="post" class="form-produit">
+        <table>
+            <tr>
+                <td>
+                    <input asp-for="Nom" placeholder="Nom du produit" />
+                </td>
+                <td>
+                    <span asp-validation-for="Nom" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input asp-for="Description" placeholder="Description longue" />
+                </td>
+                <td>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </td>
+            </tr>
+        </table>
+
+        <input type="submit" value="Envoyer" class="btn-bg-vert" />
+    </form>
+
+</div>

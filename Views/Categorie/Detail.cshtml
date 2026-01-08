@@ -1,0 +1,30 @@
+﻿@model Categorie // la vue s'attend à recevoir unz catégorie
+
+<h1>Détail de la catégorie : <span class="c_verte">@Model.Nom</span></h1>
+
+<section class="cont_cat">
+
+    <article class="card">
+
+        <section class="div_desc">
+            <h2>
+                Nom de la catégorie :
+                <span class="c_verte">@Model.Nom</span>
+            </h2>
+
+            <p class="desc_cat">
+                @Model.Description
+            </p>
+
+            <a asp-area=""
+               asp-controller="Categorie"
+               asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn_vert">
+                Modifier la catégorie
+            </a>
+        </section>
+
+    </article>
+
+</section>
