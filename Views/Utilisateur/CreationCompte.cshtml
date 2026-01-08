@@ -1,0 +1,42 @@
+﻿@using RevendTout.ViewModels
+@model EditionProduitViewModel
+@{
+    ViewData["Title"] = "Création de compte";
+}
+
+<h1>Bienvenue chez RevendTout <img width="38" height="38" src="https://img.icons8.com/emoji/48/waving-hand-emoji.png" alt="waving-hand-emoji" /></h1>
+<p class="c_verte slogan">Vente de vêtements de seconde mains</p>
+
+<hr />
+<section class="cont_prod">
+
+    <form asp-controller="Produit" asp-action="Nouveau" method="post" class="form-log">
+        <table>
+            <tr class="bloc_contenu">
+                <td><label class="c_verte" for="Nom">Email</label></td>
+                <td class="input_style"><input asp-for="Nom" id="Nom" placeholder="Entrez votre adresse mail" /></td>
+                <td><span asp-validation-for="Nom" class="text-danger"></span></td>
+            </tr>
+
+            <tr class="bloc_contenu">
+                <td><label class="c_verte" for="Desc_courte">Mot de passe</label></td>
+                <td class="input_style"><input asp-for="Desc_courte" id="Desc_courte" placeholder="Entrez votre mot de passe" type="password" /></td>
+                <td><span asp-validation-for="Desc_courte" class="text-danger"></span></td>
+            </tr>
+        </table>
+
+
+        <hr />
+        <div class="bloc_btn">
+            <input type="submit" value="Envoyer" class="btn-bg-vert" />
+            <input type="reset" value="Annuler" class="btn-bg-rouge" />
+        </div>
+        <br />
+        <a asp-controller="Produit" asp-action="Detail" asp-route-id="" class="link-success"> Créer un compte </a>
+    </form>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
