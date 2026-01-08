@@ -1,0 +1,92 @@
+﻿/* ============================= */
+/* TITRE */
+/* ============================= */
+h1 {
+    text-align: center;
+    border: 1px solid var(--couleur_verte);
+    border-radius: 5px 5px 0 0;
+    padding: 10px;
+}
+
+/* ============================= */
+/* ACTIONS HAUT DE PAGE */
+/* ============================= */
+.actions_top {
+    margin: 20px 0;
+}
+
+.btn_vert {
+    background-color: var(--couleur_verte);
+    color: white;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+    .btn_vert:hover {
+        opacity: 0.9;
+    }
+
+/* ============================= */
+/* TABLEAU */
+/* ============================= */
+table {
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+caption {
+    caption-side: bottom;
+    padding: 10px;
+    font-weight: bold;
+}
+
+thead,
+tfoot {
+    background-color: #58b09c26;
+}
+
+th,
+td {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+tbody > tr:nth-of-type(even) {
+    background-color: #58b09c14;
+}
+
+tfoot th {
+    text-align: right;
+}
+
+tfoot td {
+    font-weight: bold;
+}
+
+/* ============================= */
+/* LIEN ACTION DETAIL */
+/* ============================= */
+.link-success {
+    color: var(--couleur_verte);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+    .link-success:hover {
+        text-decoration: underline;
+    }
+
+/* ============================= */
+/* RESPONSIVE */
+/* ============================= */
+@media (max-width: 768px) {
+    table {
+        font-size: 0.75rem;
+    }
+}

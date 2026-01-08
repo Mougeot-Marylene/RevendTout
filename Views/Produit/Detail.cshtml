@@ -1,0 +1,71 @@
+﻿@model Produit // la vue s'attend à recevoir un produit
+
+<h1>Détail de : <span class="c_verte">@Model.Nom</span></h1>
+
+<section class="cont_prod">
+
+    <!-- Galerie produit -->
+    <section class="carousel" aria-label="Galerie d’images du produit">
+
+        <input type="radio" name="carousel" id="img1" checked>
+        <input type="radio" name="carousel" id="img2">
+        <input type="radio" name="carousel" id="img3">
+
+        <figure class="carousel-images">
+            <img src="/images/teeshirt_homme.webp" alt="Vue du produit 1">
+            <img src="/images/teeshirt_homme.webp" alt="Vue du produit 2">
+            <img src="/images/teeshirt_homme.webp" alt="Vue du produit 3">
+        </figure>
+
+        @* bouton *@
+        <nav class="carousel-buttons" aria-label="Navigation images">
+            <label for="img1"></label>
+            <label for="img2"></label>
+            <label for="img3"></label>
+        </nav>
+
+    </section>
+
+    <!-- Infos produit -->
+    <article class="card">
+
+        <section class="div_desc">
+            <h2>@Model.Nom</h2>
+            <p>@Model.Desc_courte</p>
+            <p>@Model.Description</p>
+        </section>
+
+        <!-- Prix -->
+        <section class="cont_prix">
+            @if (Model.Reduction > 0)
+            {
+                var red = Model.Prix - Model.Reduction;
+                <div class="prix_red">
+                    <p class="text-barre">Prix : @Model.Prix€</p>
+                    <p class="c_rouge">-@Model.Reduction€</p>
+                </div>
+                <p class="c_verte prix_final">@red€</p>
+            }
+            else
+            {
+                <p class="c_verte prix_final">@Model.Prix€</p>
+            }
+        </section>
+
+        <!-- Achat -->
+        <section class="cont_achat">
+            <a href="#" class="btn_achat">Ajouter au panier</a>
+
+            @if (Model.Quantite > 0)
+            {
+                <p class="c_verte">En stock</p>
+            }
+            else
+            {
+                <p class="c_rouge">Indisponible</p>
+            }
+        </section>
+
+    </article>
+
+</section>

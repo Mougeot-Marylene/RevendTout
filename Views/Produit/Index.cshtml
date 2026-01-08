@@ -1,0 +1,50 @@
+﻿@model List<Produit>
+@{
+    ViewData["Title"] = "Produits";
+}
+
+
+<section class="cont_card">
+
+    @foreach (var produit in Model!)
+    {
+        <article class="card">
+
+            <img src="/images/teeshirt_homme.webp" alt="Image du produit">
+
+            <div class="container">
+                <h5><b>@produit.Nom</b></h5>
+                <p>@produit.Desc_courte</p>
+            </div>
+
+            <div class="container cont_prix">
+
+                <a asp-controller="Produit"
+                   asp-action="Detail"
+                   asp-route-id="@produit.Id"
+                   class="link-success c_verte">
+                    <b>Afficher</b>
+                </a>
+
+                @if (produit.Reduction > 0)
+                {
+                    var red = produit.Prix - produit.Reduction;
+                    <div class="cont_prix_red">
+                        <div>
+                            <p class="text-barre">Prix : @produit.Prix€</p>
+                            <p class="c_rouge prix_detail">-@produit.Reduction€</p>
+                        </div>
+                        <p class="c_verte">@red€</p>
+                    </div>
+                }
+                else
+                {
+                    <p class="c_verte">@produit.Prix€</p>
+                }
+
+            </div>
+
+        </article>
+    }
+
+</section>

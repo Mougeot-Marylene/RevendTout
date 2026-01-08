@@ -1,0 +1,104 @@
+﻿@using RevendTout.ViewModels
+@model EditionProduitViewModel
+@{
+    ViewData["Title"] = "Ajouter un produit";
+}
+
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p>@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p>@TempData["ValidateMessage"]</p>
+}
+
+
+
+<h1>Ajout d'un produit</h1>
+<br />
+<div class="cont_prod">
+
+    <form asp-controller="Produit" asp-action="Nouveau" method="post" class="form-produit">
+        <table>
+            <tr>
+                <td><input asp-for="Nom" placeholder="Nom du produit" /></td>
+                <td><span asp-validation-for="Nom" class="text-danger"></span></td>
+            </tr>
+            <tr>
+                <td><input asp-for="Desc_courte" placeholder="Description courte" /></td>
+                <td><span asp-validation-for="Desc_courte" class="text-danger"></span></td>
+            </tr>
+            <tr>
+                <td><input asp-for="Description" placeholder="Description longue" /></td>
+                <td><span asp-validation-for="Description" class="text-danger"></span></td>
+            </tr>
+            <tr>
+                <td><input asp-for="Prix" type="number" step="0.01" placeholder="Prix" /></td>
+
+                <td><span asp-validation-for="Prix" class="text-danger"></span></td>
+            </tr>
+            <tr>
+                <td><input asp-for="Reduction" placeholder="Reduction" /></td>
+                <td><span asp-validation-for="Reduction" class="text-danger"></span></td>
+            </tr>
+            <tr>
+                <td><input asp-for="Quantite" placeholder="Quantite" /></td>
+                <td><span asp-validation-for="Quantite" class="text-danger"></span></td>
+            </tr>
+
+
+            <!-- Ligne pour les catégories avec cases à cocher -->
+            <tr> <td class="text_deco">Catégories : </td></tr>
+            <tr>
+
+                <td>
+                    <div class="checkbox-scroll">
+                        @for (int i = 0; i < Model.Categories.Count; i++)
+                        {
+                            var cat = Model.Categories[i];
+                            <div>
+                                <input type="checkbox"
+                                       id="cat_@i"
+                                       name="CategorieIds"
+                                       value="@cat.Value"
+                                       @(Model.CategorieIds != null && Model.CategorieIds.Contains(int.Parse(cat.Value)) ? "checked" : "") />
+                                <label for="cat_@i">@cat.Text</label>
+                            </div>
+                        }
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <input type="submit" value="Envoyer" class="btn-bg-vert" style="margin-top: 15px;" />
+    </form>
+
+    <div class="carousel">
+
+        <!-- Boutons radio (invisibles) -->
+        <input type="radio" name="carousel" id="img1" checked>
+        <input type="radio" name="carousel" id="img2">
+        <input type="radio" name="carousel" id="img3">
+
+        <!-- Images -->
+        <div class="carousel-images">
+            <img src="/images/teeshirt_homme.webp" alt="Image 1">
+            <img src="/images/teeshirt_homme.webp" alt="Image 2">
+            <img src="/images/teeshirt_homme.webp" alt="Image 3">
+        </div>
+
+        <!-- Boutons -->
+        <div class="carousel-buttons">
+            <label for="img1"></label>
+            <label for="img2"></label>
+            <label for="img3"></label>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
