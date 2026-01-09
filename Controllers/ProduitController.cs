@@ -71,7 +71,9 @@ namespace RevendTout.Controllers
         {
             var model = new EditionProduitViewModel();
             model.Categories = GetCategories();
-            return View(model);
+            model.ActionType = "Nouveau";
+            model.TitreAction = "Ajouter un nouveau produit";
+            return View("Editer",model);
         }
 
         [HttpPost]
@@ -81,11 +83,10 @@ namespace RevendTout.Controllers
             if (!ModelState.IsValid)
             {
                 produit.Categories = GetCategories(); // je remets les catégories dans le formulaire
-                return View(produit);
+                produit.ActionType = "Nouveau";
+                produit.TitreAction = "Ajouter un nouveau produit";
+                return View("Editer", produit);
             }
-
-            // On affecte la date actuelle ici, avant l'insertion
-            produit.DateCreation = DateTime.Now;
 
             string queryProduit = "INSERT INTO Produits (nom, desc_courte, description, reduction, prix, quantite, date_creation) VALUES (@Nom, @Desc_courte, @Description, @Reduction, @Prix, @Quantite, @DateCreation) returning id";
 
@@ -127,7 +128,7 @@ namespace RevendTout.Controllers
                             tran.Commit();
                             TempData["ValidateMessage"] = "Produit ajouté avec succès !";
 
-                            return RedirectToAction("Nouveau");
+                            return RedirectToAction("Detail", new { id = produit.id });
                         }
                         else
                         {
@@ -142,14 +143,18 @@ namespace RevendTout.Controllers
                 }
             }
 
-            return View(produit);
+            produit.Categories = GetCategories();
+
+            produit.ActionType = "Nouveau";
+            produit.TitreAction = "Ajouter un nouveau produit";
+            return View("Editer", produit);
         }
 
 
         public IActionResult Detail(int id)
         {
             string query = @"SELECT *
-                              FROM Produits p
+                              FROM Produits
                            WHERE id=@identifiant";
 
             Produit produits;
@@ -183,5 +188,146 @@ namespace RevendTout.Controllers
 
             return View(produits);
         }
+
+
+        [HttpGet] //décorateur 
+        public IActionResult Modifier([FromRoute] int id)
+        {
+            // récupération du produit à modifier
+            string query = "SELECT * FROM Produits WHERE id = @id";
+            string queryCategories = "SELECT categorie_id FROM Produit_categories WHERE produit_id = @id";
+
+            Produit produit; // je vais récupèrer un produit
+
+            List<int> categorieIds; // je créer une liste entier qui sont mes id de catégories            
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            {
+                produit = connexion.QueryFirstOrDefault<Produit>(query, new { id = id }); // j'ai mon produit
+                categorieIds = connexion.Query<int>(queryCategories, new { id = id }).ToList(); // j'interoge ma bdd et je récupère une liste d'entiers qui sont les id de catégorie de ce produit la (produit), je lui donne l'id qui m'interesse et je le transforme en liste
+            }
+
+            // si l'utilisateur veut modifier un produit qui n'existe pas, on aura null
+            if (produit == null)
+            {
+                return NotFound(); // erreur 404
+            }
+
+            var model = new EditionProduitViewModel();
+            // je met les données de mon produit dans mon viewModel
+            model.Nom = produit.Nom;
+            model.Desc_courte = produit.Desc_courte;
+            model.Description = produit.Description;
+            model.Prix = produit.Prix;
+            model.Reduction = produit.Reduction;
+            model.Quantite = produit.Quantite;
+            model.CategorieIds = categorieIds;
+
+            // Gérer les catégories déjà sélectionnées
+            model.Categories = GetCategories();
+
+            model.ActionType = "Modifier";
+            model.TitreAction = "Modifier le produit : " + model.Nom;
+            return View("Editer", model); // je retourne la vue Editer en lui donnant mon ViewModel
+        }
+
+        [HttpPost]
+        public IActionResult Modifier([FromForm] EditionProduitViewModel produit)
+        {
+            //Verifier si le modèle est valide, si c'est pas le cas on renvoie le formulaire, on réuccpères les informations rentrées précédement
+            if (!ModelState.IsValid)
+            {
+                produit.Categories = GetCategories(); // je remets les catégories dans le formulaire
+                produit.ActionType = "Modifier";
+                produit.TitreAction = "Modifier le produit : " + produit.Nom;
+                return View("Editer", produit); // je retourne la vue Editer en lui donnant mon ViewModel
+            }
+
+
+            string queryProduit = "UPDATE Produits SET nom=@Nom, desc_courte=@Desc_courte, description=@Description, prix=@Prix, reduction=@Reduction, quantite=@Quantite WHERE id=@id; ";
+            string queryNbCategoriesAvantUpdate = "SELECT COUNT(*) FROM produit_categories WHERE produit_id=@produit_id; ";
+            string queryDeleteCatProduit = "DELETE FROM produit_categories WHERE produit_id=@produit_id;";
+            string queryCategorieProduit = "INSERT INTO produit_categories (produit_id, categorie_id) VALUES(@produit_id, @categorie_id);";
+
+            int resUpdateProduit;
+            int nbCategoriesASupprimer;
+            int resDeleteCategorie;
+            int resInsertCategorie;
+
+
+            using (var connexion = new NpgsqlConnection(_connexionString)) // ouvre connexion à la BDD
+            {
+                // on fait une transaction car on à plusieurs requettes, si on en avait qu'une il n'y en aurait pas besoin
+                connexion.Open(); // j'ouvre la connexion de la transaction
+
+                using (var tran = connexion.BeginTransaction()) // créer une transaction, (commence la transaction)
+                {   // bloc try=> on essaye
+                    try
+                    {
+                        /* update du produit */
+                        resUpdateProduit = connexion.Execute(queryProduit, produit);
+
+                        if (resUpdateProduit != 1)
+                        {
+                            throw new InvalidOperationException("La modification du produit à échoué. Veuillez réessayer plus tard.");
+                        }
+
+                        /* suppression des anciennes catégories */
+
+                        //ExecuteScalar pour juste 1 case à récupérer
+                        nbCategoriesASupprimer = connexion.ExecuteScalar<int>(queryNbCategoriesAvantUpdate, new { produit_id = produit.id });
+
+                        resDeleteCategorie = connexion.Execute(queryDeleteCatProduit, new { produit_id = produit.id });
+
+                        if (resDeleteCategorie != nbCategoriesASupprimer)
+                        {
+
+                            throw new InvalidOperationException("La modification du produit à échoué. Veuillez réessayer plus tard.");
+                        }
+
+                        /* insersion des nouvelles catégories */
+
+                        // permet de faire la requette d'ajout de catégorie autant de fois qu'on a séléctionner de nombre de catégorie
+                        List<Object> parameters = new List<object>();
+                        foreach (var categorieId in produit.CategorieIds)
+                        {
+                            parameters.Add(new { categorie_id = categorieId, produit_id = produit.id }); // new {...} => un pour chaque catégorie choisie
+                        }
+
+                        resInsertCategorie = connexion.Execute(queryCategorieProduit, parameters);
+
+                        // on vérifie que le nombre de catégorie qui ont été crées est bien égale au nb de categorie
+                        if (resInsertCategorie == produit.CategorieIds.Count) // produit.CategorieIds.Count => nb de catégorie choisie pour le produit, resInsertCategorie => nb de catégorie ajouté
+                        {
+                            tran.Commit();
+                            TempData["ValidateMessage"] = "Produit modifié avec succès !";
+
+                            return RedirectToAction("Detail", new { id = produit.id });
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("La modification du produit à échoué. Veuillez réessayer plus tard.");
+                        }
+                    }
+                    catch (PostgresException e) when (e.MessageText.Contains("produits_unique")) // violation de contrainte d'unicité sur le titre || _unique veut dire key primaire
+                    {
+                        tran.Rollback();
+                        ModelState.AddModelError("Titre", "Ce titre est déjà utilisé par un autre produit dans la BDD.");
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        tran.Rollback();
+                        ViewData["ValidateMessage"] = e.Message;
+                    }
+
+                    // si tout ne s'est pas bien passé
+                    produit.Categories = GetCategories();
+                    produit.ActionType = "Modifier";
+                    produit.TitreAction = "Modifier le produit : " + produit.Nom;
+                    return View("Editer", produit); // je retourne la vue Editer en lui donnant mon ViewModel
+                }
+            }
+        }
+
+
     }
 }
