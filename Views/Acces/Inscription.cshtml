@@ -1,0 +1,75 @@
+﻿@using RevendTout.ViewModels
+@model InscriptionViewModel
+
+@{
+    ViewData["Title"] = "Création de compte";
+}
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p>@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p>@TempData["ValidateMessage"]</p>
+}
+
+
+
+<h1>Bienvenue chez RevendTout <img width="38" height="38" src="https://img.icons8.com/emoji/48/waving-hand-emoji.png" alt="waving-hand-emoji" /></h1>
+<p class="c_verte slogan">Vente de vêtements de seconde mains</p>
+
+<hr />
+<section class="cont_prod">
+
+    <form asp-action="Inscription" asp-controller="Acces" method="post">
+        <table>
+            <tr class="bloc_contenu">
+                <td><label class="c_verte" asp-for="@Model.Nom"></label></td>
+                <td class="input_style"><input asp-for="@Model.Nom" placeholder="Entrez votre adresse Nom" /></td>
+                <td><span asp-validation-for="@Model.Nom" class="text-danger"></span></td>
+            </tr>
+
+            <tr class="bloc_contenu">
+                <td><label class="c_verte" asp-for="@Model.Prenom"></label></td>
+                <td class="input_style"><input asp-for="@Model.Prenom"placeholder="Entrez votre adresse prénom " /></td>
+                <td><span asp-validation-for="@Model.Prenom" class="text-danger"></span></td>
+            </tr>
+
+            <tr class="bloc_contenu">
+                <td><label class="c_verte" asp-for="@Model.Email"></label></td>
+                <td class="input_style"><input asp-for="@Model.Email" placeholder="Entrez votre adresse mail" /></td>
+                <td><span asp-validation-for="@Model.Email" class="text-danger"></span></td>
+            </tr>
+
+            <tr class="bloc_contenu">
+                <td><label class="c_verte" asp-for="@Model.MotDePasse"></label></td>
+                <td class="input_style"><input asp-for="@Model.MotDePasse" placeholder="Entrez votre mot de passe" type="password" /></td>
+                <td><span asp-validation-for="@Model.MotDePasse" class="text-danger"></span></td>
+            </tr>
+
+            <tr class="bloc_contenu">
+                <td><label class="c_verte" asp-for="@Model.Nom"></label></td>
+                <td class="input_style"><input asp-for="@Model.ConfirmMotDePasse" placeholder="Confirmer votre mot de passe" type="password" /></td>
+                <td><span asp-validation-for="@Model.ConfirmMotDePasse" class="text-danger"></span></td>
+            </tr>
+        </table>
+
+
+        <hr />
+        <div class="bloc_btn">
+            <input type="submit" value="Créer mon compte" class="btn-bg-vert" />
+            <input type="reset" value="Annuler" class="btn-bg-rouge" />
+        </div>
+        <br />
+        <a asp-controller="Produit" asp-action="Detail" asp-route-id="" class="link-success"> Créer un compte </a>
+    </form>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

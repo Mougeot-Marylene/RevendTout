@@ -27,9 +27,9 @@ h1 {
     position: relative;
 }
 
-    .carousel input {
-        display: none;
-    }
+.carousel input {
+    display: none;
+}
 
 .carousel-images {
     width: 100%;

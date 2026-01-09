@@ -1,6 +1,15 @@
 ﻿@model List<Categorie>
+
 @{
-    ViewData["Title"] = "Liste_categories";
+    ViewData["Title"] = "Inscription";
+}
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p>@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p>@TempData["ValidateMessage"]</p>
 }
 
 <h1>Liste des catégories</h1>

@@ -24,7 +24,7 @@ namespace RevendTout.Controllers
         public ProduitController(IConfiguration configuration)
         {
             // récupération de la chaîne de connexion dans la configuration
-            _connexionString = configuration.GetConnectionString("GestionBibliotheque")!;
+            _connexionString = configuration.GetConnectionString("RevendTout")!;
             // si la chaîne de connexionn'a pas été trouvé => déclenche une exception => code http 500 retourné
             if (_connexionString == null)
             {
