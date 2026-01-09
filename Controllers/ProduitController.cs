@@ -70,6 +70,7 @@ namespace RevendTout.Controllers
         public IActionResult Nouveau()
         {
             var model = new EditionProduitViewModel();
+
             model.Categories = GetCategories();
             model.ActionType = "Nouveau";
             model.TitreAction = "Ajouter un nouveau produit";
@@ -88,7 +89,7 @@ namespace RevendTout.Controllers
                 return View("Editer", produit);
             }
 
-            string queryProduit = "INSERT INTO Produits (nom, desc_courte, description, reduction, prix, quantite, date_creation) VALUES (@Nom, @Desc_courte, @Description, @Reduction, @Prix, @Quantite, @DateCreation) returning id";
+            string queryProduit = "INSERT INTO Produits (nom, desc_courte, description, reduction, prix, quantite) VALUES (@Nom, @Desc_courte, @Description, @Reduction, @Prix, @Quantite) returning id";
 
 
             string queryCategorieProduit = "INSERT INTO Produit_categories (produit_id, categorie_id) VALUES(@produit_id, @categorie_id)";
@@ -128,12 +129,18 @@ namespace RevendTout.Controllers
                             tran.Commit();
                             TempData["ValidateMessage"] = "Produit ajouté avec succès !";
 
-                            return RedirectToAction("Detail", new { id = produit.id });
+                            return RedirectToAction("Detail", new { id = idProduit });
                         }
                         else
                         {
                             throw new InvalidOperationException("L'insertion du produit à échoué. Veuillez réessayer plus tard.");
                         }
+                    }
+
+                    catch (PostgresException e) when (e.MessageText.Contains("produits_unique")) // violation de contrainte d'unicité sur le titre
+                    {
+                        tran.Rollback();
+                        ModelState.AddModelError("Nom", "Ce nom est déjà référencé pour un produit dans la BDD.");
                     }
                     catch (InvalidOperationException c)
                     {
@@ -143,6 +150,7 @@ namespace RevendTout.Controllers
                 }
             }
 
+            // si tout ne s'est pas bien passé
             produit.Categories = GetCategories();
 
             produit.ActionType = "Nouveau";
@@ -171,21 +179,6 @@ namespace RevendTout.Controllers
                 }
 
             }
-            return View(produits);
-        }
-
-
-        /* Partie admin */
-        public IActionResult Admin_Index()
-        {
-            string query = "SELECT * FROM Produits";
-            List<Produit> produits;
-
-            using (var connexion = new NpgsqlConnection(_connexionString))
-            {
-                produits = connexion.Query<Produit>(query).ToList();
-            }
-
             return View(produits);
         }
 
@@ -326,6 +319,21 @@ namespace RevendTout.Controllers
                     return View("Editer", produit); // je retourne la vue Editer en lui donnant mon ViewModel
                 }
             }
+        }
+
+
+        /* Partie admin */
+        public IActionResult Admin_Index()
+        {
+            string query = "SELECT * FROM Produits";
+            List<Produit> produits;
+
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            {
+                produits = connexion.Query<Produit>(query).ToList();
+            }
+
+            return View(produits);
         }
 
 

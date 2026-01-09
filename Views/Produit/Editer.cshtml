@@ -16,32 +16,31 @@
 <h1>@Model.TitreAction</h1>
 <br />
 <div class="cont_prod">
-
-    <form asp-controller="Produit" asp-action="Nouveau" method="@Model.ActionType" class="form-produit">
+    <form asp-controller="Produit" asp-action="@Model.ActionType" method="post" class="form-produit">
         <table>
             <tr>
-                <td><input asp-for="Nom" placeholder="Nom du produit" /></td>
-                <td><span asp-validation-for="Nom" class="text-danger"></span></td>
+                <td><input asp-for="@Model.Nom" placeholder="Nom du produit" /></td>
+                <td><span asp-validation-for="@Model.Nom" class="text-danger"></span></td>
             </tr>
             <tr>
-                <td><input asp-for="Desc_courte" placeholder="Description courte" /></td>
-                <td><span asp-validation-for="Desc_courte" class="text-danger"></span></td>
+                <td><input asp-for="@Model.Desc_courte" placeholder="Description courte" /></td>
+                <td><span asp-validation-for="@Model.Desc_courte" class="text-danger"></span></td>
             </tr>
             <tr>
-                <td><input asp-for="Description" placeholder="Description longue" /></td>
-                <td><span asp-validation-for="Description" class="text-danger"></span></td>
+                <td><input asp-for="@Model.Description" placeholder="Description longue" /></td>
+                <td><span asp-validation-for="@Model.Description" class="text-danger"></span></td>
             </tr>
             <tr>
-                <td><input asp-for="Prix" placeholder="Prix" /></td>
-                <td><span asp-validation-for="Prix" class="text-danger"></span></td>
+                <td><input asp-for="@Model.Prix" placeholder="Prix" /></td>
+                <td><span asp-validation-for="@Model.Prix" class="text-danger"></span></td>
             </tr>
             <tr>
-                <td><input asp-for="Reduction" placeholder="Reduction" /></td>
-                <td><span asp-validation-for="Reduction" class="text-danger"></span></td>
+                <td><input asp-for="@Model.Reduction" placeholder="Reduction" /></td>
+                <td><span asp-validation-for="@Model.Reduction" class="text-danger"></span></td>
             </tr>
             <tr>
-                <td><input asp-for="Quantite" placeholder="Quantite" /></td>
-                <td><span asp-validation-for="Quantite" class="text-danger"></span></td>
+                <td><input asp-for="@Model.Quantite" placeholder="Quantite" /></td>
+                <td><span asp-validation-for="@Model.Quantite" class="text-danger"></span></td>
             </tr>
 
 
@@ -63,10 +62,15 @@
                                 <label for="cat_@i">@cat.Text</label>
                             </div>
                         }
+
                     </div>
                 </td>
             </tr>
         </table>
+
+        @* input de type caché,a vec les valeurs de ces 2 type, qui permets de les envoyer pour verifier si l'isbn est déjà utilisé ou pas  *@
+        <input type="hidden" asp-for="@Model.ActionType" />
+        <input type="hidden" asp-for="@Model.id" />
 
         <input type="submit" value="Envoyer" class="btn-bg-vert" style="margin-top: 15px;" />
     </form>
