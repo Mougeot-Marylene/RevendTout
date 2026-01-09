@@ -4,6 +4,10 @@
 @{
     ViewData["Title"] = "Ajouter une catégorie";
 }
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p>@TempData["ValidateMessage"]</p>
+}
 
 <h1>Ajout d'une catégorie</h1>
 <br />
