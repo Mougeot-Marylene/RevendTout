@@ -124,7 +124,6 @@ namespace RevendTout.Controllers
                 return View(utilisateur); // Retourne la vue avec le modèle en cas d'erreur
             }
 
-           
 
             // Requête pour compter le nombre d'utilisateurs avec l'email fourni
             string query = "SELECT COUNT(*) FROM Utilisateurs WHERE email = @email";

@@ -145,7 +145,6 @@ namespace RevendTout.Controllers
             return View(produit);
         }
 
-
         public IActionResult Detail(int id)
         {
             string query = @"SELECT *
