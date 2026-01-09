@@ -19,7 +19,8 @@
         <tr>
             <th scope="col">Nom</th>
             <th scope="col">Description</th>
-            <th scope="col">Action</th>
+            <th scope="col">Afficher</th>
+            <th scope="col">Modifier</th>
         </tr>
     </thead>
     <tbody>
@@ -35,6 +36,15 @@
                        asp-route-id="@produit.Id"
                        class="link-success">
                         Détail
+                    </a>
+                </td>
+                <td>
+                    <a asp-area=""
+                       asp-controller="Produit"
+                       asp-action="Modifier"
+                       asp-route-id="@produit.Id"
+                       class="link-success">
+                        Modifier
                     </a>
                 </td>
             </tr>

@@ -6,10 +6,17 @@ namespace RevendTout.ViewModels
 {
     public class EditionProduitViewModel
     {
+        //ActionType => permet de dire si je suis en nouveau ou en modifier
+        public string ActionType { get; set; } = string.Empty; // il créer une chaine qui est vide (Empty)
+        public string TitreAction { get; set; } = string.Empty; // il créer une chaine qui est vide (Empty)
+        public int id { get; set; }
+
         [Required(ErrorMessage = "Le nom est obligatoire.")]
+        [StringLength(255, ErrorMessage = "Le nom doit contenir minimum 5 carctères et maximmum 255 caractères", MinimumLength = 5)]
         public string? Nom { get; set; }
 
         [Required(ErrorMessage = "La description courte est obligatoire.")]
+        [StringLength(250, ErrorMessage = "Le nom doit contenir minimum 5 carctères et maximmum 250 caractères", MinimumLength = 5)]
         public string? Desc_courte { get; set; }
 
         [Required(ErrorMessage = "La description est obligatoire.")]
@@ -24,8 +31,6 @@ namespace RevendTout.ViewModels
 
         [Required(ErrorMessage = "La quantité est obligatoire.")]
         public int? Quantite { get; set; }
-
-        public DateTime DateCreation { get; set; }
 
         [Display(Name = "Catégorie")] // display => ca valeur catégorie va venir se mettre dans la vue au niveau du model 
         public List<int> CategorieIds { get; set; } = new List<int>(); // pour plusieurs catégories

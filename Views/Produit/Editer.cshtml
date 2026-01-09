@@ -1,8 +1,6 @@
 ﻿@using RevendTout.ViewModels
 @model EditionProduitViewModel
-@{
-    ViewData["Title"] = "Ajouter un produit";
-}
+
 
 @if (ViewData.ContainsKey("ValidateMessage"))
 {
@@ -15,11 +13,11 @@
 
 
 
-<h1>Ajout d'un produit</h1>
+<h1>@Model.TitreAction</h1>
 <br />
 <div class="cont_prod">
 
-    <form asp-controller="Produit" asp-action="Nouveau" method="post" class="form-produit">
+    <form asp-controller="Produit" asp-action="Nouveau" method="@Model.ActionType" class="form-produit">
         <table>
             <tr>
                 <td><input asp-for="Nom" placeholder="Nom du produit" /></td>
@@ -34,8 +32,7 @@
                 <td><span asp-validation-for="Description" class="text-danger"></span></td>
             </tr>
             <tr>
-                <td><input asp-for="Prix" type="number" step="0.01" placeholder="Prix" /></td>
-
+                <td><input asp-for="Prix" placeholder="Prix" /></td>
                 <td><span asp-validation-for="Prix" class="text-danger"></span></td>
             </tr>
             <tr>
