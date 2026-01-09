@@ -73,7 +73,7 @@ namespace RevendTout.Controllers
             model.Categories = GetCategories();
             model.ActionType = "Nouveau";
             model.TitreAction = "Ajouter un nouveau produit";
-            return View("Editer",model);
+            return View("Editer", model);
         }
 
         [HttpPost]
@@ -149,6 +149,7 @@ namespace RevendTout.Controllers
             produit.TitreAction = "Ajouter un nouveau produit";
             return View("Editer", produit);
         }
+
 
         public IActionResult Detail(int id)
         {
