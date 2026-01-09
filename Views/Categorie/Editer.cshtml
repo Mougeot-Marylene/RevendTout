@@ -14,7 +14,7 @@
 
 <div class="cont_prod">
 
-    <form asp-controller="Categorie" asp-action="Nouveau" method="post" class="form-produit">
+    <form asp-controller="Categorie" asp-action="@Model.ActionType" method="post" class="form-produit">
         <table>
             <tr>
                 <td>
@@ -33,8 +33,15 @@
                 </td>
             </tr>
         </table>
+        @* input de type caché,a vec les valeurs de ces 2 type, qui permets de les envoyer pour verifier si l'isbn est déjà utilisé ou pas  *@
+        <input type="hidden" asp-for="@Model.ActionType" />
+        <input type="hidden" asp-for="@Model.id" />
 
         <input type="submit" value="Envoyer" class="btn-bg-vert" />
     </form>
 
 </div>
+@* !!!! pour pouvoir faire des TESTS de nos methode controller,(section Scripts ) il faut le mettre en commentaire (on desactive la validation côté client), car on à une validation côté client donc il faut faire attention (ex pour isbn) *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
