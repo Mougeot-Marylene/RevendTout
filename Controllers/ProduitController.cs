@@ -294,7 +294,7 @@ namespace RevendTout.Controllers
                             tran.Commit();
                             TempData["ValidateMessage"] = "Produit modifié avec succès !";
 
-                            return RedirectToAction("Detail", new { id = produit.id });
+                            return RedirectToAction("Admin_Index_Detail", new { id = produit.id });
                         }
                         else
                         {
@@ -322,7 +322,6 @@ namespace RevendTout.Controllers
         }
 
 
-        /* Partie admin */
         public IActionResult Admin_Index()
         {
             string query = "SELECT * FROM Produits";
@@ -336,6 +335,29 @@ namespace RevendTout.Controllers
             return View(produits);
         }
 
+
+        public IActionResult Admin_Index_Detail(int id)
+        {
+            string query = @"SELECT *
+                              FROM Produits
+                           WHERE id=@identifiant";
+
+            Produit produits;
+
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            {
+                try
+                {
+                    produits = connexion.QuerySingle<Produit>(query, new { identifiant = id });
+                }
+                catch (System.Exception)
+                {
+                    return NotFound();
+                }
+
+            }
+            return View(produits);
+        }
 
     }
 }

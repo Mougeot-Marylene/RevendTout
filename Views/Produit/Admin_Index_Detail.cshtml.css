@@ -1,0 +1,140 @@
+﻿/* ============================= */
+/* TITRE */
+/* ============================= */
+h1 {
+    text-align: center;
+    border: 1px solid var(--couleur_verte);
+    border-radius: 5px 5px 0 0;
+    padding: 10px;
+}
+
+/* ============================= */
+/* CONTENEUR GLOBAL */
+/* ============================= */
+.cont_prod {
+    display: flex;
+    gap: 60px;
+    margin-top: 30px;
+    align-items: flex-start;
+}
+
+/* ============================= */
+/* CARROUSEL */
+/* ============================= */
+.carousel {
+    flex: 2;
+    max-width: 600px;
+    position: relative;
+}
+
+/*.carousel input {
+    display: none;
+}
+*/
+.carousel-images {
+    width: 100%;
+    height: 350px;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+    .carousel-images img {
+        max-width: 100%;
+        max-height: 100%;
+        display: none;
+        object-fit: contain;
+    }
+
+#img1:checked ~ .carousel-images img:nth-child(1),
+#img2:checked ~ .carousel-images img:nth-child(2),
+#img3:checked ~ .carousel-images img:nth-child(3) {
+    display: block;
+}
+
+.carousel-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+    .carousel-buttons label {
+        width: 12px;
+        height: 12px;
+        background: #ccc;
+        border-radius: 50%;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+
+#img1:checked ~ .carousel-buttons label:nth-child(1),
+#img2:checked ~ .carousel-buttons label:nth-child(2),
+#img3:checked ~ .carousel-buttons label:nth-child(3) {
+    background: var(--couleur_verte);
+}
+
+/* ============================= */
+/* CARD PRODUIT */
+/* ============================= */
+.card {
+    flex: 1;
+    border: 1px solid var(--couleur_verte);
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.div_desc,
+.cont_prix {
+    padding: 10px;
+    border: 1px solid var(--couleur_verte);
+    margin-top: 10px;
+}
+
+.prix_red {
+    display: flex;
+    gap: 20px;
+}
+
+.prix_final {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.div_btn{
+    display:flex;
+    gap: 10px;
+}
+
+
+/* ============================= */
+/* ACHAT */
+/* ============================= */
+.cont_achat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.btn_achat {
+    background-color: var(--couleur_verte);
+    color: var(--couleur_blanche);
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+/* ============================= */
+/* RESPONSIVE */
+/* ============================= */
+@media (max-width: 768px) {
+    .cont_prod {
+        flex-direction: column;
+    }
+
+    .carousel {
+        max-width: 100%;
+    }
+}

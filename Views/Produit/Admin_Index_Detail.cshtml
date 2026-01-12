@@ -15,9 +15,9 @@
     <!-- Galerie produit -->
     <section class="carousel" aria-label="Galerie d’images du produit">
 
-        <input type="radio" name="carousel" id="img1" checked>
+        @* <input type="radio" name="carousel" id="img1" checked>
         <input type="radio" name="carousel" id="img2">
-        <input type="radio" name="carousel" id="img3">
+        <input type="radio" name="carousel" id="img3"> *@
 
         <figure class="carousel-images">
             <img src="/images/teeshirt_homme.webp" alt="Vue du produit 1">
@@ -62,8 +62,21 @@
 
         <!-- Achat -->
         <section class="cont_achat">
-            <div>
-                <a href="#" class="btn_achat">Ajouter au panier</a>
+            <div class="div_btn">
+                <a asp-area=""
+                   asp-controller="Produit"
+                   asp-action="Modifier"
+                   asp-route-id="@Model.Id"
+                   class="link-success">
+                    Modifier
+                </a>
+                <a asp-area=""
+                   asp-controller="Produit"
+                   asp-action="Modifier"
+                   asp-route-id="@Model.Id"
+                   class="link-success">
+                    Modifier
+                </a>
             </div>
 
 
