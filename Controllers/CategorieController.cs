@@ -190,6 +190,7 @@ namespace RevendTout.Controllers
                         {
                             tran.Commit();
                             TempData["ValidateMessage"] = "Catégorie modifié avec succès !";
+                            return RedirectToAction("Detail", new { id = categorie.id });
                         }
                     }
                     catch (PostgresException e) when (e.MessageText.Contains("categories_unique")) // violation de contrainte d'unicité sur le titre || _unique veut dire key primaire
@@ -211,8 +212,50 @@ namespace RevendTout.Controllers
                 }
             }
         }
+        
+        public IActionResult Supprimer(int id)
+        {
+            string queryDeleteProduitCategorie = "DELETE FROM Produit_categories WHERE categorie_id = @id";
+            string queryDeleteCategorie = "DELETE FROM Categories WHERE id = @id";
+            int res;
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            {
+                // créer une transaction 
+                connexion.Open();
+                // ouvre une connexion pour la transaction
+                using (var tran = connexion.BeginTransaction())
+                {
+                    // bloc essaie
+                    try
+                    {
+                        // suppresion des produit_categorie
+                        connexion.Execute(queryDeleteProduitCategorie, new { id = id });
+                        // suppression des categories
+                        res  = connexion.Execute(queryDeleteCategorie, new {id = id});
 
-
+                        if (res == 1)
+                        {
+                            tran.Commit();
+                            TempData["ValidateMessage"] = "La catégorie à été suppprimée avec succes";
+                            return RedirectToAction("Index");
+                        }
+                        else
+                        {
+                            tran.Rollback();
+                            return NotFound();
+                        }
+                 
+                    }
+                    catch (Exception)
+                    {
+                        tran.Rollback();
+                        throw new InvalidOperationException("La suppression de la catégorie à échouée. Veuillez réessayer plus tard.");
+                    }
+                }
+               
+            }
+            
+        }
 
     }
 }

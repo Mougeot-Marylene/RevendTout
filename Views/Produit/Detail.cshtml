@@ -1,5 +1,13 @@
 ﻿@model Produit // la vue s'attend à recevoir un produit
-
+<div>
+    <a asp-area=""
+       asp-controller="produit"
+       asp-action="Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+<br />  
 <h1>Détail de : <span class="c_verte">@Model.Nom</span></h1>
 
 <section class="cont_prod">
@@ -54,7 +62,11 @@
 
         <!-- Achat -->
         <section class="cont_achat">
-            <a href="#" class="btn_achat">Ajouter au panier</a>
+            <div>
+                <a href="#" class="btn_achat">Ajouter au panier</a>
+                <a href="#" class="btn_achat">Ajouter au panier</a>
+            </div>
+
 
             @if (Model.Quantite > 0)
             {

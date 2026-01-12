@@ -62,12 +62,23 @@ body {
     padding: 10px;
 }
 
-    .btn_vert:hover {
-        color: var(--couleur_verte);
-    }
+.btn_vert:hover {
+    color: var(--couleur_verte);
+}
+.btn_rouge {
+    color: var(--couleur_rouge);
+    padding: 10px;
+}
+
+.btn_rouge:hover {
+    color: var(--couleur_rouge);
+}
 
 .link-success {
     color: var(--couleur_verte);
+}
+.link-danger {
+    color: var(--couleur_rouge);
 }
 
 

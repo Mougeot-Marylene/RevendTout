@@ -28,7 +28,8 @@
         <tr>
             <th scope="col">Nom</th>
             <th scope="col">Description</th>
-            <th scope="col">Action</th>
+            <th scope="col">Afficher</th>
+            <th scope="col">Supprimer</th>
         </tr>
     </thead>
     <tbody>
@@ -38,7 +39,7 @@
                 <th scope="row">@categorie.Nom</th>
                 <td>@categorie.Description</td>
                 <td>
-                    <a asp-area=""
+                    <a
                        asp-controller="Categorie"
                        asp-action="Detail"
                        asp-route-id="@categorie.Id"
@@ -46,12 +47,21 @@
                         Détail
                     </a>
                 </td>
+                <td>
+                    <a 
+                       asp-controller="Categorie"
+                       asp-action="Supprimer"
+                       asp-route-id="@categorie.Id"
+                       class="btnSuppr link-danger ">
+                        Supprimer
+                    </a>
+                </td>
             </tr>
         }
     </tbody>
     <tfoot>
         <tr>
-            <th colspan="3"></th>
+            <th colspan="4"></th>
         </tr>
     </tfoot>
 </table>
