@@ -1,19 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Dapper;
-using Npgsql;
-using RevendTout.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using RevendTout.ViewModels;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Security.Claims;
+﻿using Dapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Npgsql;
+using RevendTout.Models;
+using RevendTout.ViewModels;
+using System.Data;
+using System.Net;
+using System.Net.Mail;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Net.Mail;
-using System.Net;
 
 
 namespace RevendTout.Controllers
@@ -93,12 +94,6 @@ namespace RevendTout.Controllers
             }
         }
 
-        public IActionResult Connexion()
-        {
-            var model = new InscriptionViewModel();
-            return View(model);
-        }
-
         /// <summary>
         /// Retourne le formulaire d'inscription
         /// </summary>
@@ -107,6 +102,7 @@ namespace RevendTout.Controllers
         public IActionResult Inscription()
         {
             var model = new InscriptionViewModel();
+            var adresse = new Adresse();
             return View(model);
         }
 
@@ -116,7 +112,7 @@ namespace RevendTout.Controllers
         /// <param name="utilisateur"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Inscription([FromForm] InscriptionViewModel utilisateur)
+        public IActionResult Inscription([FromForm] InscriptionViewModel utilisateur, Adresse adresse)
         {
             // Vérifie si le modèle est valide
             if (!ModelState.IsValid)
@@ -124,9 +120,9 @@ namespace RevendTout.Controllers
                 return View(utilisateur); // Retourne la vue avec le modèle en cas d'erreur
             }
 
-
             // Requête pour compter le nombre d'utilisateurs avec l'email fourni
             string query = "SELECT COUNT(*) FROM Utilisateurs WHERE email = @email";
+            
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
                 connexion.Open();
@@ -144,8 +140,16 @@ namespace RevendTout.Controllers
                     }
                     else
                     {
+                        string queryAdresse = "INSERT INTO Adresses (numero_rue,nom_rue,ville,code_postal,pays) VALUES (@NumeroRue,@nomRue,@Ville,@CodePostal,@Pays)  returning id ";
+
                         // Requête pour insérer un nouvel utilisateur
-                        string insertQuery = "INSERT INTO Utilisateurs (nom,prenom,email,mdp,emailverificationtoken) VALUES (@nom,@prenom,@email,@password,@token)";
+                        string insertQuery = "INSERT INTO Utilisateurs (adresse_id, nom,prenom,email,mdp,emailverificationtoken) VALUES (@Adresse_id,@nom,@prenom,@email,@password,@token)";
+
+
+                        int idAdresse; // recuprere l'id de l'adresse que l'on vient de créer
+
+
+                        idAdresse = connexion.ExecuteScalar<int>(queryAdresse, adresse);
                         // Génère un token de vérification d'email 
                         byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());// on ajoute la date aujourd'hui à l'adresse mail pour être sur que le token soit unique
                         byte[] key = Guid.NewGuid().ToByteArray();
@@ -163,11 +167,20 @@ namespace RevendTout.Controllers
                         string HashedPassword = PH.HashPassword(utilisateur.Email, utilisateur.MotDePasse); // on recup le mdp haché
 
                         // Exécute la requête d'insertion et récupère le nombre de lignes affectées
-                        int RowsAffected = connexion.Execute(insertQuery, new { nom = utilisateur.Nom, prenom = utilisateur.Prenom, email = utilisateur.Email, password = HashedPassword, token = encryptedToken }, transaction: transaction);
+                        int RowsAffected = connexion.Execute(insertQuery, 
+                            new {
+                                Adresse_id = idAdresse, 
+                                nom = utilisateur.Nom, 
+                                prenom = utilisateur.Prenom, 
+                                email = utilisateur.Email, 
+                                password = HashedPassword, 
+                                token = encryptedToken 
+                            }, 
+                            transaction: transaction);
                         if (RowsAffected == 1)
                         {
                             // Création du lien de confirmation d'email
-                            UriBuilder builder = new UriBuilder();
+                            UriBuilder builder = new UriBuilder(); // creation de builder d'url
                             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
                             {
                                 builder.Scheme = "http";
@@ -183,11 +196,11 @@ namespace RevendTout.Controllers
 
                             // Envoi de l'email de confirmation
                             var mail = new MailMessage();
-                            mail.From = new MailAddress(_SenderEmail);
-                            mail.To.Add(new MailAddress(utilisateur.Email));
+                            mail.From = new MailAddress(_SenderEmail); // personne qui envoie le mail
+                            mail.To.Add(new MailAddress(utilisateur.Email)); // personne qui recçoit le mail
                             mail.Subject = "Confirmation de votre adresse email";
                             mail.Body = "<a href=\"" + builder.Uri.ToString() + "\">Confirmer votre email</a>";
-                            mail.IsBodyHtml = true;
+                            mail.IsBodyHtml = true; //  on dit que le corps du html c'est du texte
 
                             using (var smtp = new SmtpClient(_SmtpServerIp, _SmtpServerPort))
                             {
@@ -224,6 +237,104 @@ namespace RevendTout.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Connexion()
+        {
+            var model = new ConnexionViewModel();
+            return View(model);
+        }
+
+        /// <summary>
+        /// Traite le formulaire de connexion et authentifie l'utilisateur
+        /// </summary>
+        /// <param name="utilisateur">Les identifiants de connexion fournis par l'utilisateur</param>
+        /// <param name="ReturnUrl">URL de redirection après connexion réussie</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Connexion([FromForm] ConnexionViewModel utilisateur, [FromForm] string? ReturnUrl = null)
+        {
+            
+            // Vérifie si le modèle est valide
+            if (!ModelState.IsValid)
+            {
+                ViewData[ValidateMessageKey] = "Email ou mot de passe invalide.";
+                return View();
+            }
+
+            // Requête pour récupérer l'utilisateur et son rôle
+            //string query = "SELECT utilisateurs.id, email, utilisateurs.nom, password, roles.id, roles.nom FROM Utilisateurs JOIN Roles ON utilisateurs.role_id = roles.id WHERE email = @email";
+
+            string query = "SELECT id, nom, prenom, mdp, email,admin FROM Utilisateurs WHERE email = @email";
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            { 
+                Utilisateur utilisateurDB;
+                try
+                {
+                    utilisateurDB = connexion.QuerySingle<Utilisateur>(query, new { email = utilisateur.Email });
+                }
+                catch (InvalidOperationException)
+                {
+                    // Si l'utilisateur n'existe pas
+                    ViewData[ValidateMessageKey] = "Email ou mot de passe incorrect.";
+                    return View();
+                }
+
+                // Vérifie si le mot de passe correspond au hash stocké en base de données
+                if (PH.VerifyHashedPassword(utilisateur.Email, utilisateurDB.Mdp!, utilisateur.MotDePasse) == PasswordVerificationResult.Success)
+                {
+                    // Crée les claims (données) de l'utilisateur authentifié
+                    List<Claim> claims = new List<Claim>()
+                {
+                new Claim(ClaimTypes.Email, utilisateur.Email),
+                new Claim(ClaimTypes.NameIdentifier, utilisateurDB.Id.ToString()),
+                new Claim(ClaimTypes.Name, utilisateurDB.Nom!),
+                new Claim(ClaimTypes.Role, utilisateurDB.Admin.ToString()),
+                };
+
+                    // Crée une identité à partir des claims
+                    ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    // Configure les propriétés de l'authentification
+                    AuthenticationProperties properties = new AuthenticationProperties()
+                    {
+                        AllowRefresh = true,
+                    };
+
+                    // Crée le cookie d'authentification et connecte l'utilisateur
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), properties);
+
+                    // Redirige vers l'URL de retour ou vers la page d'accueil
+                    if (!string.IsNullOrEmpty(ReturnUrl))
+                    {
+                        return Redirect(ReturnUrl);
+                    }
+                    return RedirectToAction("Index", "Produit");
+                }
+                else
+                {
+                    // Si le mot de passe est incorrect
+                    ViewData["ValidateMessage"] = "Email ou mot de passe incorrect.";
+                    return View();
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Déconnecte l'utilisateur
+        /// </summary>
+        /// <returns></returns>
+        [Authorize] // Restreint l'accès à cette action aux utilisateurs authentifiés uniquement
+        public async Task<IActionResult> Deconnexion()
+        {
+            // Supprime le cookie d'authentification et déconnecte l'utilisateur
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // Redirige l'utilisateur vers la page de connexion
+            return RedirectToAction("Connexion", "Acces");
+        }
+
+       
         static byte[] EncryptStringToBytes_Aes(string plainText, byte[] Key, byte[] IV)
         {
             // Check arguments.
@@ -264,5 +375,37 @@ namespace RevendTout.Controllers
             // Return the encrypted bytes from the memory stream.
             return encrypted;
         }
+
+        // FromQuery => parametre qui on vient d'un formulaire en get (dans l'url)
+        public IActionResult ConfirmEmail([FromQuery] string email, [FromQuery] string token)
+        {
+            string query = "SELECT count(*) FROM utilisateurs  WHERE email like @email AND emailverificationtoken like @token and emailverified is false";
+            int res;
+
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            {
+                res = connexion.ExecuteScalar<int>(query, new { token = token, email = email });
+                if (res != 1)
+                {
+                    return BadRequest(); // badRequest => tu as demandé n'importe quoi
+                }
+                else
+                {
+                    string updateQuery = "UPDATE utilisateurs SET emailverified=true WHERE email like @email AND emailverificationtoken like @token AND emailverified is false";
+                    res = connexion.Execute(updateQuery, new { token = token, email = email });
+                    if (res == 1)
+                    {
+                        TempData[ValidateMessageKey] = "Votre adresse email a été confirmée avec succès. Vous pouvez maintenant vous connecter.";
+                        return RedirectToAction("Connexion");
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+            }
+        }
+
+
     }
 }

@@ -1,4 +1,15 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(
+    option =>
+    {
+        option.LoginPath = "/Acces/Connexion";
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    }
+);
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

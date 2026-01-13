@@ -2,39 +2,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - RevendTout</title>
-	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/RevendTout.styles.css" asp-append-version="true" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RevendTout</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/RevendTout.styles.css" asp-append-version="true" />
 </head>
 <body>
 
-	<div class="container_body">
+    <div class="container_body">
 
 
-		<header>
-			<nav class="navbar ">
-				<a asp-area="" asp-controller="Produit" asp-action="Index"><img class="logo" src="/images/logo.png" alt="Logo" /></a>
-				<div>
-					<input type="search" id="site-search" name="q" placeholder="Recherche..." />
+        <header>
+            <nav class="navbar ">
+                <a asp-area="" asp-controller="Produit" asp-action="Index"><img class="logo" src="/images/logo.png" alt="Logo" /></a>
+                <div>
+                    <input type="search" id="site-search" name="q" placeholder="Recherche..." />
 
-					<button class="btn_recherche">Rechercher</button>
-				</div>
-				<div class="panier_login">
-					<div>
-						<img width="50" height="50" src="https://img.icons8.com/dotty/80/shopping-bag.png" alt="shopping-bag" />
-					</div>
-					<div class="panier_login_a">
-						<a asp-area="" asp-controller="Acces" asp-action="Index">Se connecter</a> | <a asp-area="" asp-controller="Acces" asp-action="Inscription">S'inscrire</a>
-					</div>
-				</div>
-			</nav>
-		</header>
+                    <button class="btn_recherche">Rechercher</button>
+                </div>
+                <div class="panier_login">
+                    <div>
+                        <img width="50" height="50" src="https://img.icons8.com/dotty/80/shopping-bag.png" alt="shopping-bag" />
+                    </div>
 
-		<section>
-			@* 	<ul>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="panier_login_a">
+
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Acces"
+                               asp-action="Deconnexion">Déconnexion</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="panier_login_a">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Acces"
+                               asp-action="Inscription">Inscription</a> 
+                              <div class="slach c_verte">/</div>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Acces"
+                               asp-action="Connexion">Connexion</a>
+                        </div>
+                    }
+
+                </div>
+            </nav>
+        </header>
+
+        <section>
+            @* 	<ul>
 				@foreach (var categorie in @Model)
 				{
 					<ul>
@@ -42,44 +59,44 @@
 					</ul>
 				}				
 			</ul *@
-		</section>
+        </section>
 
 
-		<div class="mt-3">
-			<main role="main" class="container">
-				@RenderBody()
-			</main>
-		</div>
+        <div class="mt-3">
+            <main role="main" class="container">
+                @RenderBody()
+            </main>
+        </div>
 
-		<footer>
-			<div class="div_foot">
-				<div class="foot_logo">
-					<img class="logo" src="/images/logo.png" alt="Logo" />
-					<p class="bolder">
-						<span class="couleur_lettre_nav">R</span>evend<span class="couleur_lettre_nav">T</span>out
-					</p>
-				</div>
-				<div class="nav_foot">
+        <footer>
+            <div class="div_foot">
+                <div class="foot_logo">
+                    <img class="logo" src="/images/logo.png" alt="Logo" />
+                    <p class="bolder">
+                        <span class="couleur_lettre_nav">R</span>evend<span class="couleur_lettre_nav">T</span>out
+                    </p>
+                </div>
+                <div class="nav_foot">
 
-					<div class="bolder">Contact</div>
+                    <div class="bolder">Contact</div>
 
-					<div>
-						<div>Cookie</div>
+                    <div>
+                        <div>Cookie</div>
 
-						<div>
-							<div>© 2025</div>
-						</div>
-					</div>
+                        <div>
+                            <div>© 2025</div>
+                        </div>
+                    </div>
 
-				</div>
-			</div>
-		</footer>
+                </div>
+            </div>
+        </footer>
 
-	</div>
+    </div>
 
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<script src="~/js/site.js" asp-append-version="true"></script>
-	@await RenderSectionAsync("Scripts", required: false)
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

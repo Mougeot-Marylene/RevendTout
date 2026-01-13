@@ -13,35 +13,44 @@ h1 {
 /* ============================= */
 .cont_prod {
     display: flex;
-    gap: 40px;
     margin-top: 30px;
-    align-items: flex-start;
     justify-content: space-between;
+    flex-wrap: wrap; 
 }
 
-/* ============================= */
-/* FORMULAIRE PRODUIT */
-/* ============================= */
 .form-produit {
-    flex: 2; /* prend plus de place que le carrousel */
+    flex: 1; /* Prend tout l’espace disponible */
+    max-width: 600px; /* Limite max pour pas que ça soit trop large */
+}
+.text {
+    width: 100%; /* Prend 100% de la largeur du parent (formulaire) */
+    min-height: 120px; /* Une hauteur raisonnable */
+    box-sizing: border-box; /* Pour que padding/border soient inclus dans la largeur */
 }
 
-    .form-produit table {
-        width: 100%;
-        border-collapse: collapse;
-    }
 
-    .form-produit td {
-        padding: 8px;
-        vertical-align: middle;
-    }
+/* ============================= */
+/* textarea */
+/* ============================= */
+.text {
+    max-width: 400px !important;
+}
 
-    /* Inputs */
-    .form-produit input {
-        width: 100%;
-        padding: 8px;
-        box-sizing: border-box; /* important pour éviter les débordements */
-    }
+/* ============================= */
+/* Liste de catégorie */
+/* ============================= */
+
+.checkbox-scroll div {
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.checkbox-scroll input[type="checkbox"] {
+    margin-right: 6px;
+    vertical-align: middle;
+    height: 16px;
+}
+
 
 /* ============================= */
 /* cases à cocher  */
@@ -97,6 +106,7 @@ h1 {
     flex: 1; /* plus petit que le formulaire */
     max-width: 400px;
     position: relative;
+    padding-top: 150px;
 }
 
     /* Cache les radios */
@@ -153,24 +163,9 @@ h1 {
     background: var(--couleur_verte);
 }
 
-/* ============================= */
-/* Liste de catégorie */
-/* ============================= */
 
-.checkbox-scroll div {
-    margin-bottom: 4px;
-    width: 100%;
-}
 
-.checkbox-scroll input[type="checkbox"] {
-    margin-right: 6px;
-    vertical-align: middle;
-    height: 16px;
-}
 
-.text_deco {
-    text-decoration: 1px solid var(--couleur_verte);
-}
 /* ============================= */
 /* RESPONSIVE (mobile) */
 /* ============================= */

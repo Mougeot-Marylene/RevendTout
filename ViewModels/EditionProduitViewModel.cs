@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace RevendTout.ViewModels
@@ -17,6 +16,7 @@ namespace RevendTout.ViewModels
 
         [Required(ErrorMessage = "La description courte est obligatoire.")]
         [StringLength(250, ErrorMessage = "Le nom doit contenir minimum 5 carctères et maximmum 250 caractères", MinimumLength = 5)]
+        [Display(Name = "Description courte")] // display => ca valeur Description courte va venir se mettre dans la vue au niveau du model 
         public string? Desc_courte { get; set; }
 
         [Required(ErrorMessage = "La description est obligatoire.")]

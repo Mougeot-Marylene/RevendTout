@@ -21,6 +21,9 @@ body {
   margin-bottom: 60px;
 }
 
+.input_style {
+    width: 350px !important;
+}
 
 /* ********************** */
 
@@ -132,10 +135,6 @@ header {
     gap: 20px;
 }
 
-.panier_login_a {
-    border: 3px solid var(--couleur_verte);
-    padding: 8px ;
-}
 
 .panier_login_a a {
     color: var(--couleur_verte) !important;
