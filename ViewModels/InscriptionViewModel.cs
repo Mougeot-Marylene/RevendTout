@@ -28,7 +28,6 @@ namespace RevendTout.ViewModels
         public string? ConfirmMotDePasse { get; set; }
 
         public Adresse? Adresse { get; set; }
-        public int Adresse_id { get; set; } 
 
     }
 }

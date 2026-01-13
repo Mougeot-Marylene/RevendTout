@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Npgsql;
@@ -66,6 +67,7 @@ namespace RevendTout.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Nouveau()
         {
@@ -77,6 +79,7 @@ namespace RevendTout.Controllers
             return View("Editer", model);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Nouveau([FromForm] EditionProduitViewModel produit)
         {
@@ -183,6 +186,7 @@ namespace RevendTout.Controllers
         }
 
 
+        [Authorize(Roles = "Admin")]
         [HttpGet] //décorateur 
         public IActionResult Modifier([FromRoute] int id)
         {
@@ -223,6 +227,7 @@ namespace RevendTout.Controllers
             return View("Editer", model); // je retourne la vue Editer en lui donnant mon ViewModel
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Modifier([FromForm] EditionProduitViewModel produit)
         {
@@ -321,7 +326,7 @@ namespace RevendTout.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin")]
         public IActionResult Admin_Index()
         {
             string query = "SELECT * FROM Produits";
@@ -335,6 +340,7 @@ namespace RevendTout.Controllers
             return View(produits);
         }
 
+        [Authorize(Roles = "Admin")]
 
         public IActionResult Admin_Index_Detail(int id)
         {
@@ -357,6 +363,43 @@ namespace RevendTout.Controllers
 
             }
             return View(produits);
+        }
+
+
+        public IActionResult Archiver(int id)
+        {
+            string queryUpdateProduitArchive = @"UPDATE Produits
+                                SET archive = true
+                                WHERE id = @id";
+
+            int res;
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            {
+                // créer une transaction 
+                  // bloc essaie
+                    try
+                    {
+                        // suppression des categories
+                        res = connexion.Execute(queryUpdateProduitArchive, new { id = id });
+
+                        if (res == 1)
+                        {
+                            TempData["ValidateMessage"] = "Le prouit à été archivé avec succes";
+                            return RedirectToAction("Admin_Index");
+                        }
+                        else
+                        {
+                           throw new InvalidOperationException("L'archive du produit à échouée. Veuillez réessayer plus tard.");
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+                        throw new InvalidOperationException("L'archive du produit à échouée. Veuillez réessayer plus tard.");
+                    }
+
+            }
+
         }
 
     }

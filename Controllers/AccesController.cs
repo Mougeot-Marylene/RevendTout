@@ -102,7 +102,6 @@ namespace RevendTout.Controllers
         public IActionResult Inscription()
         {
             var model = new InscriptionViewModel();
-            var adresse = new Adresse();
             return View(model);
         }
 
@@ -112,7 +111,7 @@ namespace RevendTout.Controllers
         /// <param name="utilisateur"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Inscription([FromForm] InscriptionViewModel utilisateur, Adresse adresse)
+        public IActionResult Inscription([FromForm] InscriptionViewModel utilisateur)
         {
             // Vérifie si le modèle est valide
             if (!ModelState.IsValid)
@@ -149,7 +148,7 @@ namespace RevendTout.Controllers
                         int idAdresse; // recuprere l'id de l'adresse que l'on vient de créer
 
 
-                        idAdresse = connexion.ExecuteScalar<int>(queryAdresse, adresse);
+                        idAdresse = connexion.ExecuteScalar<int>(queryAdresse, utilisateur.Adresse);
                         // Génère un token de vérification d'email 
                         byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());// on ajoute la date aujourd'hui à l'adresse mail pour être sur que le token soit unique
                         byte[] key = Guid.NewGuid().ToByteArray();
@@ -288,8 +287,17 @@ namespace RevendTout.Controllers
                 new Claim(ClaimTypes.Email, utilisateur.Email),
                 new Claim(ClaimTypes.NameIdentifier, utilisateurDB.Id.ToString()),
                 new Claim(ClaimTypes.Name, utilisateurDB.Nom!),
-                new Claim(ClaimTypes.Role, utilisateurDB.Admin.ToString()),
+                
+      
                 };
+                    if (utilisateurDB.Admin == true)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                    }
+                    else
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "User"));
+                    }
 
                     // Crée une identité à partir des claims
                     ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

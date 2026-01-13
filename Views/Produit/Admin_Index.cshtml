@@ -21,38 +21,109 @@
             <th scope="col">Description</th>
             <th scope="col">Afficher</th>
             <th scope="col">Modifier</th>
+            <th scope="col">Archiver</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var produit in Model!)
         {
+
+
             <tr>
-                <th scope="row">@produit.Nom</th>
-                <td>@produit.Description</td>
-                <td>
-                    <a asp-area=""
-                       asp-controller="Produit"
-                       asp-action="Admin_Index_Detail"
-                       asp-route-id="@produit.Id"
-                       class="link-success">
-                        Détail
-                    </a>
-                </td>
-                <td>
-                    <a asp-area=""
-                       asp-controller="Produit"
-                       asp-action="Modifier"
-                       asp-route-id="@produit.Id"
-                       class="link-success">
-                        Modifier
-                    </a>
-                </td>
+                @if (produit.Archive == true)
+                {
+                    <th class="bg_rouge" scope="row">@produit.Nom</th>
+                }
+                else
+                {
+                    <th scope="row">@produit.Nom</th>
+                }
+
+                @if (produit.Archive == true)
+                {
+                    <td class="bg_rouge">@produit.Description</td>
+                }
+                else
+                {
+                    <td>@produit.Description</td>
+                }
+
+
+                @if (produit.Archive == true)
+                {
+                    <td class="bg_rouge">
+                        <a asp-area=""
+                           asp-controller="Produit"
+                           asp-action="Admin_Index_Detail"
+                           asp-route-id="@produit.Id"
+                           class="link-success">
+                            Détail
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a asp-area=""
+                           asp-controller="Produit"
+                           asp-action="Admin_Index_Detail"
+                           asp-route-id="@produit.Id"
+                           class="link-success">
+                            Détail
+                        </a>
+                    </td>
+                }
+                @if (produit.Archive == true)
+                {
+                    <td class="bg_rouge">
+                        <a asp-area=""
+                           asp-controller="Produit"
+                           asp-action="Modifier"
+                           asp-route-id="@produit.Id"
+                           class="link-success">
+                            Modifier
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a asp-area=""
+                           asp-controller="Produit"
+                           asp-action="Modifier"
+                           asp-route-id="@produit.Id"
+                           class="link-success">
+                            Modifier
+                        </a>
+                    </td>
+                }
+
+                @if (produit.Archive == true)
+                {
+                    <td scope="col" class="bg_rouge" >
+                        <div class="c_verte"><img width="18" height="18" src="https://img.icons8.com/parakeet/18/checked-checkbox--v1.png" alt="checked-checkbox--v1" /> archivé</div>
+                    </td>
+                }
+                else
+                {
+                    <td scope="col">
+                        <a asp-area=""
+                           asp-controller="Produit"
+                           asp-action="Archiver"
+                           asp-route-id="@produit.Id"
+                           class="btn_archive link-success">
+                            Archiver 
+                        </a>
+                    </td>
+                }
+               
             </tr>
+
         }
     </tbody>
     <tfoot>
         <tr>
-            <th colspan="3"></th>
+            <th colspan="7"></th>
         </tr>
     </tfoot>
 </table>

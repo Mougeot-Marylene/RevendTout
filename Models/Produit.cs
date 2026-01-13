@@ -11,6 +11,7 @@
         public int? Quantite { get; set; }
         public int? ScoreVente { get; set; }
         public DateTime DateCreation { get; set; }
+        public bool? Archive { get; set; }
     }
 }
 

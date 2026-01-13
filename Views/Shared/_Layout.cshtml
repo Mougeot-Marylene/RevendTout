@@ -27,8 +27,17 @@
                         <img width="50" height="50" src="https://img.icons8.com/dotty/80/shopping-bag.png" alt="shopping-bag" />
                     </div>
 
+
                     @if (User.Identity.IsAuthenticated)
                     {
+                        if (@User.IsInRole("Admin"))
+                        {
+                            <div class="panier_login_a">
+
+                                <a class="nav-link text-dark"  asp-controller="Produit"
+                                   asp-action="Admin_Index">Administrateur</a>
+                            </div>
+                        }
                         <div class="panier_login_a">
 
                             <a class="nav-link text-dark" asp-area="" asp-controller="Acces"

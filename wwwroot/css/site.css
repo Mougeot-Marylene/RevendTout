@@ -31,6 +31,7 @@ body {
     --couleur_verte: #58B09C;
     --couleur_blanche: #ffffff;
     --couleur_rouge: #800020;
+    --couleur_rouge_transparent: #8000203b
 }
 
 .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
@@ -82,6 +83,10 @@ body {
 }
 .link-danger {
     color: var(--couleur_rouge);
+}
+
+.bg_rouge {
+    background-color: var(--couleur_rouge_transparent);
 }
 
 
