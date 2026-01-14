@@ -13,7 +13,7 @@ h1 {
 /* ============================= */
 .cont_prod {
     display: flex;
-    margin-top: 30px;
+    margin-top: 20px;
     justify-content: space-between;
     flex-wrap: wrap; 
 }
@@ -57,7 +57,7 @@ h1 {
 /* ============================= */
 
 .checkbox-scroll {
-    height: 120px;
+    height: 80px;
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 5px;

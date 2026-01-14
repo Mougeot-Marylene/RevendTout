@@ -1,5 +1,13 @@
 ﻿@model Categorie // la vue s'attend à recevoir unz catégorie
 
+@{
+    ViewData["Title"] = "Détail de la catégorie";
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+
 <div>
     <a asp-area=""
        asp-controller="Categorie"

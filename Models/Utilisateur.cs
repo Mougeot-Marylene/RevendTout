@@ -10,5 +10,7 @@ namespace RevendTout.Models
         public string? Email { get; set; }
         public string? Mdp { get; set; }
         public bool Admin { get; set; } = false;
+
+        public Adresse? Adresse { get; set; }
     }
 }

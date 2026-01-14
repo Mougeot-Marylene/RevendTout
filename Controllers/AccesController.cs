@@ -284,11 +284,11 @@ namespace RevendTout.Controllers
                     // Crée les claims (données) de l'utilisateur authentifié
                     List<Claim> claims = new List<Claim>()
                 {
-                new Claim(ClaimTypes.Email, utilisateur.Email),
-                new Claim(ClaimTypes.NameIdentifier, utilisateurDB.Id.ToString()),
-                new Claim(ClaimTypes.Name, utilisateurDB.Nom!),
-                
-      
+                    new Claim(ClaimTypes.Email, utilisateur.Email),
+                    new Claim(ClaimTypes.NameIdentifier, utilisateurDB.Id.ToString()),
+                    new Claim(ClaimTypes.Name, utilisateurDB.Prenom!),
+
+
                 };
                     if (utilisateurDB.Admin == true)
                     {

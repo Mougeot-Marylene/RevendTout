@@ -79,7 +79,8 @@ namespace RevendTout.Controllers
                     if (res == 1)
                     {
                         TempData["ValidateMessage"] = "La catégorie à bien été ajoutée";
-                        return RedirectToAction("Nouveau");
+
+                        return RedirectToAction("Admin_Index_Detail", new { id = categorie.id });
                     }
                     else
                     {
@@ -190,7 +191,8 @@ namespace RevendTout.Controllers
                         {
                             tran.Commit();
                             TempData["ValidateMessage"] = "Catégorie modifié avec succès !";
-                            return RedirectToAction("Detail", new { id = categorie.id });
+
+                            return RedirectToAction("Admin_Index_Detail", new { id = categorie.id });
                         }
                     }
                     catch (PostgresException e) when (e.MessageText.Contains("categories_unique")) // violation de contrainte d'unicité sur le titre || _unique veut dire key primaire

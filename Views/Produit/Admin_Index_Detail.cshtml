@@ -1,4 +1,11 @@
 ﻿@model Produit // la vue s'attend à recevoir un produit
+@{
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+
 <div>
     <a asp-area=""
        asp-controller="produit"

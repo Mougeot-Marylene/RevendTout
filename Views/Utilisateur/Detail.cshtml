@@ -1,0 +1,49 @@
+﻿@model Utilisateur // la vue s'attend à recevoir unz catégorie
+
+@{
+    ViewData["Title"] = "Détail de l'utilisateur";
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+<div>
+    <a asp-area=""
+       asp-controller="Produit"
+       asp-action="Admin_Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+<br />
+
+<h1>Détail de l'utilisateur : <span class="c_verte">@Model.Nom @Model.Prenom</span></h1>
+
+<section class="cont_cat">
+
+    <article class="card">
+
+        <p>
+            Nom: <span class="c_verte">@Model.Nom</span>
+        </p>
+        <p>
+            Prénom: <span class="c_verte">@Model.Prenom</span>
+        </p>
+        <p>
+            Email: <span class="c_verte">@Model.Email</span>
+        </p>
+
+        @if (Model.Adresse != null)
+        {
+            <p>Adresse : <span class="c_verte">@Model.Adresse.Numero_rue @Model.Adresse.Nom_rue,  @Model.Adresse.Code_postal  @Model.Adresse.Ville</span></p>
+            <p>Pays : <span class="c_verte">@Model.Adresse.Pays</span></p>
+        }
+        else
+        {
+            <p>Adresse : Non renseignée</p>
+        }
+        
+
+    </article>
+
+</section>

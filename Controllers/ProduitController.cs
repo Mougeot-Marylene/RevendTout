@@ -44,6 +44,7 @@ namespace RevendTout.Controllers
 
             return View(produits);
         }
+       
         private List<SelectListItem> GetCategories()
         {
             string query = "SELECT id, nom FROM Categories";
@@ -132,7 +133,7 @@ namespace RevendTout.Controllers
                             tran.Commit();
                             TempData["ValidateMessage"] = "Produit ajouté avec succès !";
 
-                            return RedirectToAction("Detail", new { id = idProduit });
+                            return RedirectToAction("Admin_Index_Detail", new { id = idProduit });
                         }
                         else
                         {
@@ -329,7 +330,7 @@ namespace RevendTout.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Admin_Index()
         {
-            string query = "SELECT * FROM Produits";
+            string query = "SELECT * FROM Produits  ORDER BY date_creation ASC";
             List<Produit> produits;
 
             using (var connexion = new NpgsqlConnection(_connexionString))
