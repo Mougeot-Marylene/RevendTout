@@ -11,4 +11,9 @@
     <PackageReference Include="Npgsql" Version="10.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Image\" />
+    <Folder Include="wwwroot\images\Produits\" />
+  </ItemGroup>
+
 </Project>

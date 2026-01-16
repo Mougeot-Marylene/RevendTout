@@ -7,7 +7,7 @@
         Retour
     </a>
 </div>
-<br />  
+<br />
 <h1>Détail de : <span class="c_verte">@Model.Nom</span></h1>
 
 <section class="cont_prod">
@@ -15,24 +15,41 @@
     <!-- Galerie produit -->
     <section class="carousel" aria-label="Galerie d’images du produit">
 
-        <input type="radio" name="carousel" id="img1" checked>
-        <input type="radio" name="carousel" id="img2">
-        <input type="radio" name="carousel" id="img3">
+        @{
+            int imageCount = Model.Images?.Count ?? 0;
+        }
 
-        <figure class="carousel-images">
-            <img src="/images/teeshirt_homme.webp" alt="Vue du produit 1">
-            <img src="/images/teeshirt_homme.webp" alt="Vue du produit 2">
-            <img src="/images/teeshirt_homme.webp" alt="Vue du produit 3">
-        </figure>
+        <!-- Boutons radio (invisibles) -->
+        @for (int i = 0; i < imageCount; i++)
+        {
+            <input type="radio" name="carousel" id="img@(i + 1)" @(i == 0 ? "checked" : "") />
+        }
 
-        @* bouton *@
-        <nav class="carousel-buttons" aria-label="Navigation images">
-            <label for="img1"></label>
-            <label for="img2"></label>
-            <label for="img3"></label>
-        </nav>
+        <!-- Images -->
+        <div class="carousel-images">
+            @if (Model.Images != null && Model.Images.Any())
+            {
+                foreach (var img in Model.Images)
+                {
+                    <img src="@img.Url" alt="@img.Description" />
+                }
+            }
+            else
+            {
+                <p>Aucune image disponible.</p>
+            }
+        </div>
+
+        <!-- Boutons -->
+        <div class="carousel-buttons">
+            @for (int i = 0; i < imageCount; i++)
+            {
+                <label for="img@(i + 1)"></label>
+            }
+        </div>
 
     </section>
+
 
     <!-- Infos produit -->
     <article class="card">

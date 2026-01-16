@@ -1,5 +1,6 @@
 ﻿@using RevendTout.ViewModels
 @model EditionProduitViewModel
+
 @{
     Layout = "_LayoutAdmin";
 }
@@ -38,9 +39,9 @@
             <input asp-for="@Model.Nom" placeholder="Nom du produit" />
             <span asp-validation-for="@Model.Nom" class="text-danger"></span>
         </div>
-        <br />  
+        <br />
         <div>
-            <label class="c_verte" asp-for="@Model.Desc_courte"></label> 
+            <label class="c_verte" asp-for="@Model.Desc_courte"></label>
             <br />
             <input asp-for="@Model.Desc_courte" placeholder="Description courte" />
             <span asp-validation-for="@Model.Desc_courte" class="text-danger"></span>
@@ -62,14 +63,14 @@
         <div>
             <label class="c_verte" asp-for="@Model.Prix"></label>
             <br />
-            <input asp-for="@Model.Prix" placeholder="Prix" />
+            <input type="number" asp-for="@Model.Prix" placeholder="Prix" />
             <span asp-validation-for="@Model.Prix" class="text-danger"></span>
         </div>
         <br />
         <div>
             <label class="c_verte" asp-for="@Model.Reduction"></label>
             <br />
-            <input asp-for="@Model.Reduction" placeholder="Reduction" />
+            <input type="number" asp-for="@Model.Reduction" placeholder="Reduction" />
             <br />
             <span asp-validation-for="@Model.Reduction" class="text-danger"></span>
         </div>
@@ -86,7 +87,7 @@
 
         <label class="c_verte" asp-for="@Model.Categories"></label>
         <br />
-        
+
         <div class="checkbox-scroll">
             @for (int i = 0; i < Model.Categories.Count; i++)
             {
@@ -103,6 +104,7 @@
         </div>
 
 
+
         @* input de type caché,a vec les valeurs de ces 2 type, qui permets de les envoyer pour verifier si l'isbn est déjà utilisé ou pas  *@
         <input type="hidden" asp-for="@Model.ActionType" />
         <input type="hidden" asp-for="@Model.id" />
@@ -110,28 +112,69 @@
         <input type="submit" value="Envoyer" class="btn-bg-vert" style="margin-top: 15px;" />
     </form>
 
-    <div class="carousel">
+
+    @if (@Model.ActionType == "Modifier")
+    {
+        <form asp-controller="Image" asp-action="Ajouter" method="post" class="form-produit" enctype="multipart/form-data">
+
+            <br />
+            <div>
+                <label class="c_verte" for="FichierImage"></label>
+                <br />
+                <input type="file" id="FichierImage" name="image.FichierImage" />
+                <br />  
+            </div>
+            <div>
+                <br />  
+                <label class="c_verte" for="Description">Description</label>
+                <br />
+                <input type="text" id="Description" name="image.Description" />
+                
+            </div>
+
+            <input type="hidden" name="image.IdProduit" value="@Model.id" />
+
+            <input type="submit" value="Envoyer" class="btn-bg-vert" style="margin-top: 15px;" />
+        </form>
+    
+
+    <section class="carousel" aria-label="Galerie d’images du produit">
+
+        @{
+            int imageCount = Model.Images?.Count ?? 0;
+        }
 
         <!-- Boutons radio (invisibles) -->
-        <input type="radio" name="carousel" id="img1" checked>
-        <input type="radio" name="carousel" id="img2">
-        <input type="radio" name="carousel" id="img3">
+        @for (int i = 0; i < imageCount; i++)
+        {
+            <input type="radio" name="carousel" id="img@(i + 1)" @(i == 0 ? "checked" : "") />
+        }
 
         <!-- Images -->
         <div class="carousel-images">
-            <img src="/images/teeshirt_homme.webp" alt="Image 1">
-            <img src="/images/teeshirt_homme.webp" alt="Image 2">
-            <img src="/images/teeshirt_homme.webp" alt="Image 3">
+            @if (Model.Images != null && Model.Images.Any())
+            {
+                foreach (var img in Model.Images)
+                {
+                    <img src="@img.Url" alt="@img.Description" />
+                }
+            }
+            else
+            {
+                <p>Aucune image disponible.</p>
+            }
         </div>
 
         <!-- Boutons -->
         <div class="carousel-buttons">
-            <label for="img1"></label>
-            <label for="img2"></label>
-            <label for="img3"></label>
+            @for (int i = 0; i < imageCount; i++)
+            {
+                <label for="img@(i + 1)"></label>
+            }
         </div>
 
-    </div>
+    </section>
+    }
 
 
 </div>

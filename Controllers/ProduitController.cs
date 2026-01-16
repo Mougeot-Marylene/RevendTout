@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Npgsql;
 using RevendTout.Models;
 using RevendTout.ViewModels;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace RevendTout.Controllers
@@ -44,7 +43,7 @@ namespace RevendTout.Controllers
 
             return View(produits);
         }
-       
+
         private List<SelectListItem> GetCategories()
         {
             string query = "SELECT id, nom FROM Categories";
@@ -93,6 +92,7 @@ namespace RevendTout.Controllers
                 return View("Editer", produit);
             }
 
+            // Création de requêtes d'insertion
             string queryProduit = "INSERT INTO Produits (nom, desc_courte, description, reduction, prix, quantite) VALUES (@Nom, @Desc_courte, @Description, @Reduction, @Prix, @Quantite) returning id";
 
 
@@ -165,67 +165,114 @@ namespace RevendTout.Controllers
 
         public IActionResult Detail(int id)
         {
-            string query = @"SELECT *
-                              FROM Produits
-                           WHERE id=@identifiant";
+            string query = @"
+                SELECT 
+                    p.id, p.nom, p.desc_courte, p.description, p.reduction, p.prix,
+                    i.id, i.produit_id, i.url, i.description
+                FROM Produits p
+                LEFT JOIN Images i ON p.id = i.produit_id
+                WHERE p.id = @identifiant
+            ";
 
-            Produit produits;
+            Produit? produit = null;
 
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
-                try
-                {
-                    produits = connexion.QuerySingle<Produit>(query, new { identifiant = id });
-                }
-                catch (System.Exception)
-                {
-                    return NotFound();
-                }
+                // C’est une boîte de rangement
+                // clé : Id du produit
+                // valeur : le produit unique
+                // Ça évite d’avoir le même produit plusieurs fois
+                var produitDict = new Dictionary<int, Produit>();
 
+                
+                // je lis un Produit,  une Image et je retourne un Produit (la requête SQL fait un JOIN)
+                var result = connexion.Query<Produit, Image, Produit>(
+                    query,
+
+                    // p = le produit de la ligne, i = l’image de la ligne (peut être null)
+                    (p, i) =>
+                    {
+                        // Est-ce que ce produit est déjà dans le dictionnaire ?
+                        if (!produitDict.TryGetValue(p.Id, out var prodEntry))
+                        {
+                            prodEntry = p; // On crée le produit
+                            prodEntry.Images = new List<Image>(); // On initialise sa liste d’images
+                            produitDict.Add(prodEntry.Id, prodEntry); // On le stocke
+                        }
+
+                        // Si la ligne contient une image, on l’ajoute à la liste Images
+                        if (i != null)
+                        {
+                            prodEntry.Images!.Add(i);
+                        }
+
+                        // Retourne le produit (obligatoire pour Dapper)
+                        return prodEntry;
+                    },
+                    new { identifiant = id },
+                    splitOn: "id"
+                );
+
+                // On récupère le produit avec toutes ses images
+                produit = produitDict.Values.FirstOrDefault();
             }
-            return View(produits);
+
+            if (produit == null)
+                return NotFound();
+
+            return View(produit);
         }
+
 
 
         [Authorize(Roles = "Admin")]
         [HttpGet] //décorateur 
         public IActionResult Modifier([FromRoute] int id)
         {
-            // récupération du produit à modifier
-            string query = "SELECT * FROM Produits WHERE id = @id";
+            string queryProduit = "SELECT * FROM Produits WHERE id = @id";
             string queryCategories = "SELECT categorie_id FROM Produit_categories WHERE produit_id = @id";
+            string queryImages = "SELECT * FROM Images WHERE produit_id = @id";
 
-            Produit produit; // je vais récupèrer un produit
+            Produit? produit;
+            List<int> categorieIds;
 
-            List<int> categorieIds; // je créer une liste entier qui sont mes id de catégories            
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
-                produit = connexion.QueryFirstOrDefault<Produit>(query, new { id = id }); // j'ai mon produit
-                categorieIds = connexion.Query<int>(queryCategories, new { id = id }).ToList(); // j'interoge ma bdd et je récupère une liste d'entiers qui sont les id de catégorie de ce produit la (produit), je lui donne l'id qui m'interesse et je le transforme en liste
+                // 1. Récupérer le produit
+                produit = connexion.QueryFirstOrDefault<Produit>(queryProduit, new { id = id });
+                if (produit == null)
+                {
+                    return NotFound();
+                }
+
+                // 2. Récupérer les catégories associées
+                categorieIds = connexion.Query<int>(queryCategories, new { id = id }).ToList();
+
+                // 3. Récupérer les images associées
+                var images = connexion.Query<Image>(queryImages, new { id = id }).ToList();
+
+                // 4. Affecter les images au produit
+                produit.Images = images;
             }
 
-            // si l'utilisateur veut modifier un produit qui n'existe pas, on aura null
-            if (produit == null)
+            // 5. Préparer le ViewModel avec les données du produit
+            var model = new EditionProduitViewModel
             {
-                return NotFound(); // erreur 404
-            }
+                id = id,
+                Nom = produit.Nom,
+                Desc_courte = produit.Desc_courte,
+                Description = produit.Description,
+                Prix = produit.Prix,
+                Reduction = produit.Reduction,
+                Quantite = produit.Quantite,
+                CategorieIds = categorieIds,
+                Categories = GetCategories(),
+                ActionType = "Modifier",
+                TitreAction = "Modifier le produit : " + produit.Nom,
+                Images = produit.Images
+            };
 
-            var model = new EditionProduitViewModel();
-            // je met les données de mon produit dans mon viewModel
-            model.Nom = produit.Nom;
-            model.Desc_courte = produit.Desc_courte;
-            model.Description = produit.Description;
-            model.Prix = produit.Prix;
-            model.Reduction = produit.Reduction;
-            model.Quantite = produit.Quantite;
-            model.CategorieIds = categorieIds;
-
-            // Gérer les catégories déjà sélectionnées
-            model.Categories = GetCategories();
-
-            model.ActionType = "Modifier";
-            model.TitreAction = "Modifier le produit : " + model.Nom;
-            return View("Editer", model); // je retourne la vue Editer en lui donnant mon ViewModel
+            return View("Editer", model);
         }
 
         [Authorize(Roles = "Admin")]
@@ -246,7 +293,7 @@ namespace RevendTout.Controllers
             string queryNbCategoriesAvantUpdate = "SELECT COUNT(*) FROM produit_categories WHERE produit_id=@produit_id; ";
             string queryDeleteCatProduit = "DELETE FROM produit_categories WHERE produit_id=@produit_id;";
             string queryCategorieProduit = "INSERT INTO produit_categories (produit_id, categorie_id) VALUES(@produit_id, @categorie_id);";
-
+            
             int resUpdateProduit;
             int nbCategoriesASupprimer;
             int resDeleteCategorie;
@@ -261,7 +308,7 @@ namespace RevendTout.Controllers
                 using (var tran = connexion.BeginTransaction()) // créer une transaction, (commence la transaction)
                 {   // bloc try=> on essaye
                     try
-                    {
+                    {                      
                         /* update du produit */
                         resUpdateProduit = connexion.Execute(queryProduit, produit);
 
@@ -345,26 +392,52 @@ namespace RevendTout.Controllers
 
         public IActionResult Admin_Index_Detail(int id)
         {
-            string query = @"SELECT *
-                              FROM Produits
-                           WHERE id=@identifiant";
+            string query = @"
+        SELECT 
+            p.id, p.nom, p.desc_courte, p.description, p.reduction, p.prix,
+            i.id, i.produit_id, i.url, i.description
+        FROM Produits p
+        LEFT JOIN Images i ON p.id = i.produit_id
+        WHERE p.id = @identifiant
+    ";
 
-            Produit produits;
+            Produit? produit = null;
 
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
-                try
-                {
-                    produits = connexion.QuerySingle<Produit>(query, new { identifiant = id });
-                }
-                catch (System.Exception)
-                {
-                    return NotFound();
-                }
+                var produitDict = new Dictionary<int, Produit>();
 
+                var result = connexion.Query<Produit, Image, Produit>(
+                    query,
+                    (p, i) =>
+                    {
+                        if (!produitDict.TryGetValue(p.Id, out var prodEntry))
+                        {
+                            prodEntry = p;
+                            prodEntry.Images = new List<Image>();
+                            produitDict.Add(prodEntry.Id, prodEntry);
+                        }
+
+                        if (i != null)
+                        {
+                            prodEntry.Images!.Add(i);
+                        }
+
+                        return prodEntry;
+                    },
+                    new { identifiant = id },
+                    splitOn: "id"
+                );
+
+                produit = produitDict.Values.FirstOrDefault();
             }
-            return View(produits);
+
+            if (produit == null)
+                return NotFound();
+
+            return View(produit);
         }
+
 
 
         public IActionResult Archiver(int id)
@@ -377,27 +450,27 @@ namespace RevendTout.Controllers
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
                 // créer une transaction 
-                  // bloc essaie
-                    try
+                // bloc essaie
+                try
+                {
+                    // suppression des categories
+                    res = connexion.Execute(queryUpdateProduitArchive, new { id = id });
+
+                    if (res == 1)
                     {
-                        // suppression des categories
-                        res = connexion.Execute(queryUpdateProduitArchive, new { id = id });
-
-                        if (res == 1)
-                        {
-                            TempData["ValidateMessage"] = "Le prouit à été archivé avec succes";
-                            return RedirectToAction("Admin_Index");
-                        }
-                        else
-                        {
-                           throw new InvalidOperationException("L'archive du produit à échouée. Veuillez réessayer plus tard.");
-                        }
-
+                        TempData["ValidateMessage"] = "Le prouit à été archivé avec succes";
+                        return RedirectToAction("Admin_Index");
                     }
-                    catch (Exception)
+                    else
                     {
                         throw new InvalidOperationException("L'archive du produit à échouée. Veuillez réessayer plus tard.");
                     }
+
+                }
+                catch (Exception)
+                {
+                    throw new InvalidOperationException("L'archive du produit à échouée. Veuillez réessayer plus tard.");
+                }
 
             }
 

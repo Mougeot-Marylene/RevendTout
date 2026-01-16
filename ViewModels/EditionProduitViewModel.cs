@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using RevendTout.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace RevendTout.ViewModels
@@ -35,5 +36,11 @@ namespace RevendTout.ViewModels
         [Display(Name = "Catégorie")] // display => ca valeur catégorie va venir se mettre dans la vue au niveau du model 
         public List<int> CategorieIds { get; set; } = new List<int>(); // pour plusieurs catégories
         public List<SelectListItem> Categories { get; set; } = new List<SelectListItem>(); // l'id de la catégorie de produit sera dynamique
+
+
+        public Image? Image { get; set; }
+        public List<Image>? Images { get; set; } = new List<Image>();
+
+
     }
 }

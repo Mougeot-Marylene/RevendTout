@@ -12,6 +12,10 @@
         public int? ScoreVente { get; set; }
         public DateTime DateCreation { get; set; }
         public bool? Archive { get; set; }
+
+
+        public Image? Image { get; set; }
+        public List<Image>? Images { get; set; } = new List<Image>();
     }
 }
 
