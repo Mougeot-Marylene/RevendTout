@@ -1,0 +1,70 @@
+﻿@model List<TailleAdulte>
+
+@{
+    ViewData["Title"] = "Liste de taille adultes";
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p>@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p>@TempData["ValidateMessage"]</p>
+}
+
+<h1>Liste des tailles adultes</h1>
+
+<div class="actions_top">
+    <a asp-area=""
+       asp-controller="TailleAdulte"
+       asp-action="Nouveau"
+       class="btn_vert">
+        + Ajouter une taille
+    </a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Taille</th>
+            <th scope="col">Afficher</th>
+            <th scope="col">Supprimer</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tailleAdulte in Model!)
+        {
+            <tr>
+                <th scope="row">@tailleAdulte.Taille</th>
+                <td>
+                    <a
+                       asp-controller="TailleAdulte"
+                       asp-action="Detail"
+                       asp-route-id="@tailleAdulte.Id"
+                       class="link-success">
+                        Détail
+                    </a>
+                </td>
+                <td>
+                    <a 
+                       asp-controller="TailleAdulte"
+                       asp-action="Supprimer"
+                       asp-route-id="@tailleAdulte.Id"
+                       class="btnSuppr link-danger ">
+                        Supprimer
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="4"></th>
+        </tr>
+    </tfoot>
+</table>

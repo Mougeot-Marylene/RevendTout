@@ -1,0 +1,54 @@
+﻿@model TailleAdulte // la vue s'attend à recevoir unz catégorie
+
+@{
+    ViewData["Title"] = "Détail de la catégorie";
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+
+<div>
+    <a asp-area=""
+       asp-controller="TailleAdulte"
+       asp-action="Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+<br />
+
+<h1>Détail de la taille : <span class="c_verte">@Model.Taille</span></h1>
+
+<section class="cont_cat">
+
+    <article class="card">
+
+        <section class="div_desc">
+            <h2>
+                Numéro de taille :
+                <span class="c_verte">@Model.Taille</span>
+            </h2>
+
+
+            <div>
+            <a asp-area=""
+                   asp-controller="TailleAdulte"
+               asp-action="Modifier"
+               asp-route-id="@Model.Id"
+               class="btn_vert">
+                Modifier la taille
+                </a>
+                <a asp-area=""
+                   asp-controller="TailleAdulte"
+                   asp-action="Supprimer"
+                   asp-route-id="@Model.Id"
+                   class="btnSuppr btn_rouge">
+                    Supprimer la taille
+                </a>
+            </div>
+        </section>
+
+    </article>
+
+</section>

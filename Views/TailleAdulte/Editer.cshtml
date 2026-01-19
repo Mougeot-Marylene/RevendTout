@@ -1,0 +1,58 @@
+﻿@using RevendTout.ViewModels
+@model EditionTailleAdulteViewModel
+
+@{
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+
+
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p>@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p>@TempData["ValidateMessage"]</p>
+}
+
+<div class="actions_top">
+    <a asp-area=""
+       asp-controller="TailleAdulte"
+       asp-action="Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+
+<h1>@Model.TitreAction</h1>
+
+<br />
+
+<div class="cont_prod">
+
+    <form asp-controller="TailleAdulte" asp-action="@Model.ActionType" method="post" class="form-produit">
+        <table>
+            <tr>
+                <td>
+                    <label class="c_verte" asp-for="@Model.Taille"></label>
+                    <br />
+                    <input asp-for="@Model.Taille" placeholder="Taille" />
+                    <span asp-validation-for="@Model.Taille" class="text-danger"></span>
+                </td>
+            </tr>
+        </table>
+        @* input de type caché,a vec les valeurs de ces 2 type, qui permets de les envoyer pour verifier si l'isbn est déjà utilisé ou pas  *@
+        <input type="hidden" asp-for="@Model.ActionType" />
+        <input type="hidden" asp-for="@Model.Id" />
+
+        <input type="submit" value="Valider" class="btn-bg-vert" />
+    </form>
+
+</div>
+@* !!!! pour pouvoir faire des TESTS de nos methode controller,(section Scripts ) il faut le mettre en commentaire (on desactive la validation côté client), car on à une validation côté client donc il faut faire attention (ex pour isbn) *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

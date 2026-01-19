@@ -6,19 +6,20 @@ using RevendTout.ViewModels;
 
 namespace RevendTout.Controllers
 {
-    public class CategorieController : Controller
+    public class TailleAdulteController : Controller
     {
+
         // attribut stockant la chaîne de connexion à la base de données
         private readonly string _connexionString;
 
         /// <summary>
-        /// Constructeur de CategoriesController
+        /// Constructeur de TailleAdulteController
         /// </summary>
         /// <param name="configuration">configuration de l'application</param>
         /// <exception cref="Exception"></exception>
         /// 
         /// configuration on recup ce qu'il  ya dans appsetting.json
-        public CategorieController(IConfiguration configuration)
+        public TailleAdulteController(IConfiguration configuration)
         {
             // récupération de la chaîne de connexion dans la configuration
             _connexionString = configuration.GetConnectionString("RevendTout")!;
@@ -31,59 +32,59 @@ namespace RevendTout.Controllers
 
         public IActionResult Index()
         {
-            string query = "SELECT * FROM Categories";
-            List<Categorie> categories;
+            string query = "SELECT * FROM taille_adultes";
+            List<TailleAdulte> taille_adultes;
 
-             using (var connexion = new NpgsqlConnection(_connexionString))
+            using (var connexion = new NpgsqlConnection(_connexionString))
             {
-                categories = connexion.Query<Categorie>(query).ToList();
+                taille_adultes = connexion.Query<TailleAdulte>(query).ToList();
             }
-            
-             return View(categories);
+
+            return View(taille_adultes);
         }
 
         [HttpGet]
         public IActionResult Nouveau()
         {
-            var model =  new EditionCategorieViewModel();
+            var model = new EditionTailleAdulteViewModel();
 
             model.ActionType = "Nouveau";
-            model.TitreAction = "Ajouter une categorie";
+            model.TitreAction = "Ajouter une taille";
             return View("Editer", model);
         }
 
         [HttpPost]
-        public IActionResult Nouveau([FromForm] EditionCategorieViewModel categorie)
+        public IActionResult Nouveau([FromForm] EditionTailleAdulteViewModel tailleAdulte)
         {
             // lorsque l'on renvoie le formulaire, on récupères les informations rentrées précédement
             if (!ModelState.IsValid)
             {
-                categorie.ActionType = "Nouveau";
-                categorie.TitreAction = "Ajouter une categorie";
-                return View("Editer", categorie);
+                tailleAdulte.ActionType = "Nouveau";
+                tailleAdulte.TitreAction = "Ajouter une tailleAdulte";
+                return View("Editer", tailleAdulte);
             }
 
             int res;
-            string queryCategorie = @"INSERT INTO Categories (nom, description)  VALUES (@Nom, @Description )";
+            string queryTailleAdulte = @"INSERT INTO taille_adultes (taille) VALUES (@taille)";
 
-         
+
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
                 try
                 {
 
-                    res = connexion.Execute(queryCategorie, categorie);
+                    res = connexion.Execute(queryTailleAdulte, tailleAdulte);
 
 
                     if (res == 1)
                     {
-                        TempData["ValidateMessage"] = "La catégorie à bien été ajoutée";
+                        TempData["ValidateMessage"] = "La taille à bien été ajoutée";
 
                         return RedirectToAction("Index");
                     }
                     else
                     {
-                        throw new InvalidOperationException("L'insertion de la catégorie à échoué. Veuillez réessayer plus tard.");
+                        throw new InvalidOperationException("L'insertion de la taille à échoué. Veuillez réessayer plus tard.");
                     }
                 }
                 catch (InvalidOperationException c)
@@ -93,25 +94,25 @@ namespace RevendTout.Controllers
 
             }
 
-            categorie.ActionType = "Nouveau";
-            categorie.TitreAction = "Ajouter une categorie";
-            return View("Editer", categorie);
+            tailleAdulte.ActionType = "Nouveau";
+            tailleAdulte.TitreAction = "Ajouter une tailleAdulte";
+            return View("Editer", tailleAdulte);
         }
-    
-    
+
+
         public IActionResult Detail(int id)
         {
             string query = @"SELECT *
-                              FROM Categories c
+                              FROM taille_adultes 
                            WHERE id=@identifiant";
 
-            Categorie categories;
+            TailleAdulte taileAdultes;
 
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
                 try
                 {
-                    categories = connexion.QuerySingle<Categorie>(query, new { identifiant = id });
+                    taileAdultes = connexion.QuerySingle<TailleAdulte>(query, new { identifiant = id });
                 }
                 catch (System.Exception)
                 {
@@ -119,56 +120,56 @@ namespace RevendTout.Controllers
                 }
 
             }
-            return View(categories);
+            return View(taileAdultes);
         }
 
 
         [HttpGet] //décorateur 
         public IActionResult Modifier([FromRoute] int id)
         {
-            // récupération de la categorie à modifier
-            string query = "SELECT * FROM Categories WHERE id = @id";
+            // récupération de la taille à modifier
+            string query = "SELECT * FROM taille_adultes WHERE id = @id";
 
-            Categorie categorie; // je vais récupèrer une catégorie
+            TailleAdulte tailleAdulte; // je vais récupèrer une catégorie
 
-                      
+
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
-                categorie = connexion.QueryFirstOrDefault<Categorie>(query, new { id = id }); // j'ai ma categorie               
+                tailleAdulte = connexion.QueryFirstOrDefault<TailleAdulte>(query, new { id = id }); // j'ai ma tailleAdulte               
             }
 
-            // si l'utilisateur veut modifier une categorie qui n'existe pas, on aura null
-            if (categorie == null)
+            // si l'utilisateur veut modifier une tailleAdulte qui n'existe pas, on aura null
+            if (tailleAdulte == null)
             {
                 return NotFound(); // erreur 404
             }
 
-            var model = new EditionCategorieViewModel();
-            // je met les données de ma categorie dans mon viewModel
-            model.Nom = categorie.Nom;
-            model.Description = categorie.Description;
+            var model = new EditionTailleAdulteViewModel();
+            // je met les données de ma tailleAdulte dans mon viewModel
+            model.Taille = tailleAdulte.Taille;
 
 
             model.ActionType = "Modifier";
-            model.TitreAction = "Modifier la categorie : " + model.Nom;
+            model.TitreAction = "Modifier la taille : " + model.Taille;
             return View("Editer", model); // je retourne la vue Editer en lui donnant mon ViewModel
         }
 
+
         [HttpPost]
-        public IActionResult Modifier([FromForm] EditionCategorieViewModel categorie)
+        public IActionResult Modifier([FromForm] EditionTailleAdulteViewModel tailleAdulte)
         {
             //Verifier si le modèle est valide, si c'est pas le cas on renvoie le formulaire, on réuccpères les informations rentrées précédement
             if (!ModelState.IsValid)
             {
-                categorie.ActionType = "Modifier";
-                categorie.TitreAction = "Modifier le categorie : " + categorie.Nom;
-                return View("Editer", categorie); // je retourne la vue Editer en lui donnant mon ViewModel
+                tailleAdulte.ActionType = "Modifier";
+                tailleAdulte.TitreAction = "Modifier la taille : " + tailleAdulte.Taille;
+                return View("Editer", tailleAdulte); // je retourne la vue Editer en lui donnant mon ViewModel
             }
 
 
-            string queryProduit = "UPDATE Categories SET nom=@Nom,  description=@Description WHERE id=@id; ";
+            string queryProduit = "UPDATE taille_adultes SET taille=@taille WHERE id=@id; ";
 
-            int resUpdateCategorie;
+            int resUpdateTaille;
 
             using (var connexion = new NpgsqlConnection(_connexionString)) // ouvre connexion à la BDD
             {
@@ -180,21 +181,21 @@ namespace RevendTout.Controllers
                     try
                     {
                         /* update de la categorie */
-                        resUpdateCategorie = connexion.Execute(queryProduit, categorie);
+                        resUpdateTaille = connexion.Execute(queryProduit, tailleAdulte);
 
-                        if (resUpdateCategorie != 1)
+                        if (resUpdateTaille != 1)
                         {
-                            throw new InvalidOperationException("La modification de la categorie à échoué. Veuillez réessayer plus tard.");
+                            throw new InvalidOperationException("La modification de la taille à échoué. Veuillez réessayer plus tard.");
                         }
                         else
                         {
                             tran.Commit();
-                            TempData["ValidateMessage"] = "Catégorie modifié avec succès !";
+                            TempData["ValidateMessage"] = "taille modifié avec succès !";
 
-                            return RedirectToAction("Detail", new { id = categorie.id });
+                            return RedirectToAction("Detail", new { id = tailleAdulte.Id });
                         }
                     }
-                    catch (PostgresException e) when (e.MessageText.Contains("categories_unique")) // violation de contrainte d'unicité sur le titre || _unique veut dire key primaire
+                    catch (PostgresException e) when (e.MessageText.Contains("taille_adultes_unique")) // violation de contrainte d'unicité sur le titre || _unique veut dire key primaire
                     {
                         tran.Rollback();
                         ModelState.AddModelError("Titre", "Ce nom est déjà utilisé par une autre categorie dans la BDD.");
@@ -207,17 +208,17 @@ namespace RevendTout.Controllers
 
                     // si tout ne s'est pas bien passé
 
-                    categorie.ActionType = "Modifier";
-                    categorie.TitreAction = "Modifier le categorie : " + categorie.Nom;
-                    return View("Editer", categorie); // je retourne la vue Editer en lui donnant mon ViewModel
+                    tailleAdulte.ActionType = "Modifier";
+                    tailleAdulte.TitreAction = "Modifier la taille adulte : " + tailleAdulte.Taille;
+                    return View("Editer", tailleAdulte); // je retourne la vue Editer en lui donnant mon ViewModel
                 }
             }
         }
-        
+
         public IActionResult Supprimer(int id)
         {
-            string queryDeleteProduitCategorie = "DELETE FROM Produit_categories WHERE categorie_id = @id";
-            string queryDeleteCategorie = "DELETE FROM Categories WHERE id = @id";
+            string queryDeleteProduitTaille = "DELETE FROM produit_tailles_adultes WHERE taille_adultes = @id";
+            string queryDeleteTaille = "DELETE FROM taille_adultes WHERE id = @id";
             int res;
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
@@ -229,15 +230,15 @@ namespace RevendTout.Controllers
                     // bloc essaie
                     try
                     {
-                        // suppresion des produit_categorie
-                        connexion.Execute(queryDeleteProduitCategorie, new { id = id });
-                        // suppression des categories
-                        res  = connexion.Execute(queryDeleteCategorie, new {id = id});
+                        // suppresion des produit_tailles_adultes
+                        connexion.Execute(queryDeleteProduitTaille, new { id = id });
+                        // suppression des taille_adultes
+                        res = connexion.Execute(queryDeleteTaille, new { id = id });
 
                         if (res == 1)
                         {
                             tran.Commit();
-                            TempData["ValidateMessage"] = "La catégorie à été suppprimée avec succes";
+                            TempData["ValidateMessage"] = "La taille à été suppprimée avec succes";
                             return RedirectToAction("Index");
                         }
                         else
@@ -245,17 +246,17 @@ namespace RevendTout.Controllers
                             tran.Rollback();
                             return NotFound();
                         }
-                 
+
                     }
                     catch (Exception)
                     {
                         tran.Rollback();
-                        throw new InvalidOperationException("La suppression de la catégorie à échouée. Veuillez réessayer plus tard.");
+                        throw new InvalidOperationException("La suppression de la taille à échouée. Veuillez réessayer plus tard.");
                     }
                 }
-               
+
             }
-            
+
         }
 
     }
