@@ -36,12 +36,27 @@ button.accept-policy {
     font-size: 1rem;
     line-height: inherit;
 }
-.panier_login_a{
+
+.panier_login_a {
     display: flex;
 }
-.slach{
-    padding-top: 8px;    
+
+.nom_utilistaeur {
+    padding-top: 10px;
 }
+
+.liste_perso_co ul {
+    list-style-type: none;
+}
+
+.liste_perso_co ::marker {
+    display: none !important;
+}
+
+.slach {
+    padding-top: 8px;
+}
+
 .footer {
     position: absolute;
     bottom: 0;
@@ -49,4 +64,3 @@ button.accept-policy {
     white-space: nowrap;
     line-height: 60px;
 }
-

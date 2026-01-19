@@ -1,0 +1,179 @@
+﻿@using RevendTout.ViewModels
+@model PanierViewModel
+
+@{
+    ViewData["Title"] = "Panier";
+}
+<div>
+    <a asp-area=""
+       asp-controller="produit"
+       asp-action="Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+<br />
+<h1>Mon panier</h1>
+
+<br />
+
+@if (Model.TotalArticles > 0)
+{
+    <section>
+        <div class="bloc_produit">
+
+            @foreach (var item in Model.Produits)
+            {
+                <div class="card_produit">
+
+                    @{
+                        var premiereImage = item.Key.Images.OrderBy(img => img.Id).FirstOrDefault();
+                    }
+
+                    @if (premiereImage != null)
+                    {
+                        <img class="img_prod" src="@premiereImage.Url" alt="Image du produit @item.Key.Nom" />
+                    }
+
+                    <div class="bloc_donnees">
+
+                        <div class="bloc_donnees_1">
+
+                            <div class="c_verte prix_sr">@item.Key.Nom</div>
+
+                            @* si le produit contient une reduction*@
+                            @if (item.Key.Reduction != 0)
+                            {
+                                // si le nb de qunatité ets sup à 1
+                                @if (item.Value > 1)
+                                {
+                                    decimal? reduc = (item.Key.Prix - item.Key.Reduction) * item.Value;
+
+                                    // convertie ma quantite de produit en decimal pour pouvoir calculer le prix total
+                                    decimal nb_quantite_decimale = Convert.ToDecimal(item.Value);
+                                    // multiplication qui permet de calculer le prix total
+                                    decimal? prix_quantite = nb_quantite_decimale * item.Key.Prix;
+
+                                    <div class="prix">
+                                        <div class="c_rouge">@reduc&#8364;</div>
+                                        <div class="text-barre">@prix_quantite&#8364;</div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    decimal? reduc = (item.Key.Prix - item.Key.Reduction) * item.Value;
+                                    <div class="prix">
+                                        <div class="c_rouge">@reduc&#8364;</div>
+                                        <div class="text-barre">@item.Key.Prix&#8364;</div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                @if (item.Value > 1)
+                                {
+                                    // convertie ma quantite de produit en decimal pour pouvoir calculer le prix total
+                                    decimal nb_quantite_decimale = Convert.ToDecimal(item.Value);
+                                    // multiplication qui permet de calculer le prix total
+                                    decimal? prix_quantite = nb_quantite_decimale * item.Key.Prix;
+
+
+                                    <div class="prix_sr">@prix_quantite&#8364;</div>
+                                }
+                                else
+                                {
+                                    <div class="prix_sr">
+                                        @item.Key.Prix&#8364;
+                                    </div>
+                                }
+
+                            }
+
+
+                        </div>
+
+
+
+
+                        <div class="bloc_donnees_1">
+
+                            <div>Taille : <span class="c_verte">@item.Key.Nom</span></div>
+
+
+                        </div>
+
+                        <div class="bloc_donnees_1">
+                            <div class="bloc_quantite">
+                                <form asp-controller="Panier"
+                                      asp-action="DiminuerQuantite"
+                                      asp-route-id="@item.Key.Id" method="post" class="form-produit">
+                                    <input type="submit" value="-" class="btn_quantite" />
+                                </form>
+
+                                <div class="quantite">@item.Value</div>
+                                <form asp-controller="Panier"
+                                      asp-action="AugmenterQuantite"
+                                      asp-route-id="@item.Key.Id" method="post" class="form-produit">
+                                    <input type="submit" value="+" class="btn_quantite" />
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+
+        </div>
+
+
+        <div class="bloc_recap">
+            <h3 class="text-center c_noir">Récapitulatif</h3>
+            <br />
+            <div class="recap_prix">
+                <div class="c_noir">Sous_total (@Model.TotalArticles articles)</div>
+                <div class="c_noir">@Model.TotalPrix &#8364</div>
+            </div>
+            <hr />
+            <div>
+                <div class="recap_prix">
+                    <div class="c_noir">Frais de livraison</div>
+                    <div class="c_noir">Offert</div>
+                </div>
+                <br />
+
+                <div class="recap_prix">
+                    <div class="c_noir  fs-3">Total à payer</div>
+                    <div class="c_verte bolder fs-3">@Model.TotalPrix &#8364</div>
+                </div>
+                <br />
+
+                <div class="c_noir recap_prix">Vous économisez <span class="c_rouge"> @Model.TotalReduction&#8364</span></div>
+                <br />
+
+                <hr />
+
+                <br />
+                <div class="c_noir">
+                    <input type="checkbox" name="pro" id="pro" value="1" checked="checked" />
+
+                    <label for="pro"> J'accepte les conditions générales de vente</label>
+
+                </div>
+                <hr />
+
+                <br />
+                <form asp-controller="Panier"
+                      asp-action="DiminuerQuantite"
+                      method="post" class="form_recap">
+                    <input type="submit" value="Validez mon panier" class="btn_recap" />
+                </form>
+            </div>
+        </div>
+        
+    </section>
+}else{
+
+    <h2 class="c_verte text-center"> Votre panier est vide</h2>
+}

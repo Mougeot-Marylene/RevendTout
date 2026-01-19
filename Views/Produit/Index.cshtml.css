@@ -14,6 +14,7 @@
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     transition: box-shadow 0.3s;
     background-color: #fff;
+
 }
 
     .card:hover {
@@ -23,9 +24,14 @@
     /* IMAGE */
     .card img {
         width: 100%;
+        height: auto; /* garder les proportions */
+        max-height: 250px; /* limite la hauteur max */
         border-radius: 5px 5px 0 0;
         display: block;
+        object-fit: contain; /* l'image est contenue dans la boîte sans être coupée */
+        background-color: #f0f0f0; /* optionnel : couleur de fond si l'image est plus petite */
     }
+
 
 /* CONTENU */
 .container {

@@ -112,13 +112,6 @@ h1 {
     margin-top: 15px;
 }
 
-.btn_achat {
-    background-color: var(--couleur_verte);
-    color: var(--couleur_blanche);
-    text-decoration: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-}
 
 /* ============================= */
 /* RESPONSIVE */

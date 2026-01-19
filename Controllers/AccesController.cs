@@ -139,7 +139,7 @@ namespace RevendTout.Controllers
                     }
                     else
                     {
-                        string queryAdresse = "INSERT INTO Adresses (numero_rue,nom_rue,ville,code_postal,pays) VALUES (@NumeroRue,@nomRue,@Ville,@CodePostal,@Pays)  returning id ";
+                        string queryAdresse = "INSERT INTO Adresses (numero_rue,nom_rue,ville,code_postal,pays) VALUES (@Numero_rue,@nom_rue,@Ville,@Code_postal,@Pays)  returning id ";
 
                         // Requête pour insérer un nouvel utilisateur
                         string insertQuery = "INSERT INTO Utilisateurs (adresse_id, nom,prenom,email,mdp,emailverificationtoken) VALUES (@Adresse_id,@nom,@prenom,@email,@password,@token)";

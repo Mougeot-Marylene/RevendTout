@@ -24,7 +24,7 @@
                 </div>
                 <div class="panier_login">
                     <div>
-                        <img width="50" height="50" src="https://img.icons8.com/dotty/80/shopping-bag.png" alt="shopping-bag" />
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Panier" asp-action="Index"><img width="48" height="48" src="https://img.icons8.com/fluency-systems-regular/48/shopping-bag--v1.png" alt="shopping-bag--v1" /></a>
                     </div>
 
 
@@ -34,22 +34,39 @@
                         {
                             <div class="panier_login_a">
 
-                                <a class="nav-link text-dark"  asp-controller="Produit"
-                                   asp-action="Admin_Index">Administrateur</a>
+                                <a class="nav-link text-dark" asp-controller="Produit" asp-action="Admin_Index">Administrateur</a>
+                                   <a class="nav-link text-dark" asp-area="" asp-controller="Acces" asp-action="Deconnexion">Déconnexion</a>
                             </div>
                         }
-                        <div class="panier_login_a">
+                        if (@User.IsInRole("User"))
+                        {
+                            <div class="panier_login_a nom_utilistaeur ">
 
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Acces"
-                               asp-action="Deconnexion">Déconnexion</a>
-                        </div>
+
+                                <details class="liste_perso_co">
+
+                                    <summary class="c_verte">@User.Identity!.Name ▼</summary>
+                                    <ul>
+                                        <li>
+                                            <a class="nav-link text-dark" asp-area="" asp-controller="Panier"
+                                               asp-action="Index">Panier</a>
+                                        </li>
+                                        <li>
+                                            <a class="nav-link text-dark" asp-area="" asp-controller="Acces"
+                                               asp-action="Deconnexion">Déconnexion</a>
+                                        </li>
+                                    </ul>
+                                </details>
+
+                            </div>
+                        }
                     }
                     else
                     {
                         <div class="panier_login_a">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Acces"
-                               asp-action="Inscription">Inscription</a> 
-                              <div class="slach c_verte">/</div>
+                               asp-action="Inscription">Inscription</a>
+                            <div class="slach c_verte">/</div>
                             <a class="nav-link text-dark" asp-area="" asp-controller="Acces"
                                asp-action="Connexion">Connexion</a>
                         </div>

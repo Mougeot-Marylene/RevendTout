@@ -33,16 +33,44 @@ namespace RevendTout.Controllers
         }
         public IActionResult Index()
         {
-            string query = "SELECT * FROM Produits";
+            string query = @" SELECT 
+                                p.id, p.nom, p.desc_courte, p.description, p.reduction, p.prix, p.archive,
+                                i.id, i.produit_id, i.url, i.description
+                            FROM Produits p
+                            LEFT JOIN Images i ON p.id = i.produit_id
+                            ORDER BY p.id";
+
             List<Produit> produits;
 
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
-                produits = connexion.Query<Produit>(query).ToList();
+                var produitDict = new Dictionary<int, Produit>();
+
+                var result = connexion.Query<Produit, Image, Produit>(
+                    query,
+                    (p, i) =>
+                    {
+                        if (!produitDict.TryGetValue(p.Id, out var prodEntry))
+                        {
+                            prodEntry = p;
+                            prodEntry.Images = new List<Image>();
+                            produitDict.Add(prodEntry.Id, prodEntry);
+                        }
+                        if (i != null)
+                        {
+                            prodEntry.Images.Add(i);
+                        }
+                        return prodEntry;
+                    },
+                    splitOn: "id"
+                );
+
+                produits = produitDict.Values.ToList();
             }
 
             return View(produits);
         }
+
 
         private List<SelectListItem> GetCategories()
         {

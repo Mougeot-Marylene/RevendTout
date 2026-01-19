@@ -3,17 +3,20 @@
     ViewData["Title"] = "Produits";
 }
 
-
 <section class="cont_card">
 
-
-
-    @foreach (var produit in Model!)
-    {    @if (produit.Archive == false)
+    @foreach (var produit in Model)
+    {
+        if (produit.Archive == false)
         {
             <article class="card">
 
-                <img src="/images/teeshirt_homme.webp" alt="Image du produit">
+                @{
+                    var premiereImage = produit.Images.OrderBy(img => img.Id).FirstOrDefault();
+                    string urlImage = premiereImage != null ? premiereImage.Url : "/images/teeshirt_homme.webp";
+                }
+
+                <img class="img_prod" src="@urlImage" alt="Image du produit @produit.Nom" />
 
                 <div class="container">
                     <h5><b>@produit.Nom</b></h5>
@@ -49,7 +52,6 @@
 
             </article>
         }
-
     }
 
 </section>

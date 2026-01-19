@@ -31,7 +31,8 @@ body {
     --couleur_verte: #58B09C;
     --couleur_blanche: #ffffff;
     --couleur_rouge: #800020;
-    --couleur_rouge_transparent: #8000203b
+    --couleur_rouge_transparent: #8000203b;
+    --couleur_noir: #3d3b3c;
 }
 
 .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
@@ -57,6 +58,9 @@ body {
     color: var(--couleur_rouge);
 }
 
+.c_noir {
+    color: var(--couleur_noir);
+}
 .text-barre {
     text-decoration: line-through;
 }
@@ -89,7 +93,16 @@ body {
     background-color: var(--couleur_rouge_transparent);
 }
 
-
+.btn_achat {
+    background-color: var(--couleur_verte);
+    color: var(--couleur_blanche);
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+    .btn_achat:hover {
+        color: var(--couleur_blanche);
+    }
 /* Main */
 main {
     flex: 1 1 auto;
