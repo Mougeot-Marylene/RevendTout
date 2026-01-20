@@ -58,6 +58,10 @@
             <h2>@Model.Nom</h2>
             <p>@Model.Desc_courte</p>
             <p>@Model.Description</p>
+            @foreach (var taille in Model.Tailles.DistinctBy(t => t.Id))
+            {
+                <p>Taille  : @taille.Nom</p>
+            }
         </section>
 
         <!-- Prix -->

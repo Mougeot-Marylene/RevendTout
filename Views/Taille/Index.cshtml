@@ -1,7 +1,7 @@
-﻿@model List<TailleAdulte>
+﻿@model List<Taille>
 
 @{
-    ViewData["Title"] = "Liste de taille adultes";
+    ViewData["Title"] = "Liste de taille enfants";
     Layout = "_LayoutAdmin";
 }
 @section Styles {
@@ -17,11 +17,11 @@
     <p>@TempData["ValidateMessage"]</p>
 }
 
-<h1>Liste des tailles adultes</h1>
+<h1>Liste des tailles</h1>
 
 <div class="actions_top">
     <a asp-area=""
-       asp-controller="TailleAdulte"
+       asp-controller="Taille"
        asp-action="Nouveau"
        class="btn_vert">
         + Ajouter une taille
@@ -37,24 +37,24 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var tailleAdulte in Model!)
+        @foreach (var tailleM in Model!)
         {
             <tr>
-                <th scope="row">@tailleAdulte.Taille</th>
+                <th scope="row">@tailleM.Nom</th>
                 <td>
                     <a
-                       asp-controller="TailleAdulte"
+                       asp-controller="Taille"
                        asp-action="Detail"
-                       asp-route-id="@tailleAdulte.Id"
+                       asp-route-id="@tailleM.Id"
                        class="link-success">
                         Détail
                     </a>
                 </td>
                 <td>
                     <a 
-                       asp-controller="TailleAdulte"
+                       asp-controller="Taille"
                        asp-action="Supprimer"
-                       asp-route-id="@tailleAdulte.Id"
+                       asp-route-id="@tailleM.Id"
                        class="btnSuppr link-danger ">
                         Supprimer
                     </a>

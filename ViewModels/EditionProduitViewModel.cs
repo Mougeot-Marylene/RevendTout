@@ -41,6 +41,10 @@ namespace RevendTout.ViewModels
         public Image? Image { get; set; }
         public List<Image>? Images { get; set; } = new List<Image>();
 
+        [Display(Name = "Taille")]
+        public int TailleId { get; set; }
+        public List<SelectListItem> Tailles { get; set; } = new List<SelectListItem>();
+
 
     }
 }

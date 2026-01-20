@@ -103,7 +103,25 @@
             }
         </div>
 
+        <br />
+    
+        <label class="c_verte" asp-for="TailleId"></label>
+        <br />
 
+        <div class="checkbox-scroll imput_taille">
+            @for (int i = 0; i < Model.Tailles.Count; i++)
+            {
+                var taille = Model.Tailles[i];
+                <div>
+                    <input type="radio"
+                           id="taille_@i"
+                           name="TailleId"
+                           value="@taille.Value"
+                           @(Model.TailleId.ToString() == taille.Value ? "checked" : "") />
+                    <label for="taille_@i">@taille.Text</label>
+                </div>
+            }
+        </div>
 
         @* input de type caché,a vec les valeurs de ces 2 type, qui permets de les envoyer pour verifier si l'isbn est déjà utilisé ou pas  *@
         <input type="hidden" asp-for="@Model.ActionType" />

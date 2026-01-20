@@ -1,8 +1,8 @@
 ﻿namespace RevendTout.Models
 {
-    public class TailleAdulte
+    public class Taille
     {
         public int Id { get; set; }
-        public string? Taille { get; set; }
+        public string? Nom { get; set; }
     }
 }

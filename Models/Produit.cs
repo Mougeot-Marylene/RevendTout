@@ -16,6 +16,8 @@
 
         public Image? Image { get; set; }
         public List<Image>? Images { get; set; } = new List<Image>();
+
+        public List<Taille>? Tailles { get; set; } = new List<Taille>();
     }
 }
 

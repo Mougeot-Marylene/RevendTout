@@ -1,5 +1,5 @@
 ﻿@using RevendTout.ViewModels
-@model EditionTailleAdulteViewModel
+@model EditionTailleViewModel
 
 @{
     Layout = "_LayoutAdmin";
@@ -20,7 +20,7 @@
 
 <div class="actions_top">
     <a asp-area=""
-       asp-controller="TailleAdulte"
+       asp-controller="Taille"
        asp-action="Index"
        class="btn_vert">
         Retour
@@ -33,14 +33,14 @@
 
 <div class="cont_prod">
 
-    <form asp-controller="TailleAdulte" asp-action="@Model.ActionType" method="post" class="form-produit">
+    <form asp-controller="Taille" asp-action="@Model.ActionType" method="post" class="form-produit">
         <table>
             <tr>
                 <td>
-                    <label class="c_verte" asp-for="@Model.Taille"></label>
+                    <label class="c_verte" asp-for="@Model.Nom"></label>
                     <br />
-                    <input asp-for="@Model.Taille" placeholder="Taille" />
-                    <span asp-validation-for="@Model.Taille" class="text-danger"></span>
+                    <input asp-for="@Model.Nom" placeholder="Taille" />
+                    <span asp-validation-for="@Model.Nom" class="text-danger"></span>
                 </td>
             </tr>
         </table>

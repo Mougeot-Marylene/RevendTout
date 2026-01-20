@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using RevendTout.Models;
@@ -6,9 +7,8 @@ using RevendTout.ViewModels;
 
 namespace RevendTout.Controllers
 {
-    public class TailleAdulteController : Controller
+    public class TailleController : Controller
     {
-
         // attribut stockant la chaîne de connexion à la base de données
         private readonly string _connexionString;
 
@@ -19,7 +19,7 @@ namespace RevendTout.Controllers
         /// <exception cref="Exception"></exception>
         /// 
         /// configuration on recup ce qu'il  ya dans appsetting.json
-        public TailleAdulteController(IConfiguration configuration)
+        public TailleController(IConfiguration configuration)
         {
             // récupération de la chaîne de connexion dans la configuration
             _connexionString = configuration.GetConnectionString("RevendTout")!;
@@ -30,42 +30,45 @@ namespace RevendTout.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
-            string query = "SELECT * FROM taille_adultes";
-            List<TailleAdulte> taille_adultes;
+            string query = "SELECT * FROM Tailles";
+            List<Taille> tailles;
 
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
-                taille_adultes = connexion.Query<TailleAdulte>(query).ToList();
+                tailles = connexion.Query<Taille>(query).ToList();
             }
 
-            return View(taille_adultes);
+            return View(tailles);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Nouveau()
         {
-            var model = new EditionTailleAdulteViewModel();
+            var model = new EditionTailleViewModel();
 
             model.ActionType = "Nouveau";
             model.TitreAction = "Ajouter une taille";
             return View("Editer", model);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult Nouveau([FromForm] EditionTailleAdulteViewModel tailleAdulte)
+        public IActionResult Nouveau([FromForm] EditionTailleViewModel taille)
         {
             // lorsque l'on renvoie le formulaire, on récupères les informations rentrées précédement
             if (!ModelState.IsValid)
             {
-                tailleAdulte.ActionType = "Nouveau";
-                tailleAdulte.TitreAction = "Ajouter une tailleAdulte";
-                return View("Editer", tailleAdulte);
+                taille.ActionType = "Nouveau";
+                taille.TitreAction = "Ajouter une taille Enfant";
+                return View("Editer", taille);
             }
 
             int res;
-            string queryTailleAdulte = @"INSERT INTO taille_adultes (taille) VALUES (@taille)";
+            string queryTaille = @"INSERT INTO Tailles (nom) VALUES (@nom)";
 
 
             using (var connexion = new NpgsqlConnection(_connexionString))
@@ -73,7 +76,7 @@ namespace RevendTout.Controllers
                 try
                 {
 
-                    res = connexion.Execute(queryTailleAdulte, tailleAdulte);
+                    res = connexion.Execute(queryTaille, taille);
 
 
                     if (res == 1)
@@ -94,25 +97,24 @@ namespace RevendTout.Controllers
 
             }
 
-            tailleAdulte.ActionType = "Nouveau";
-            tailleAdulte.TitreAction = "Ajouter une tailleAdulte";
-            return View("Editer", tailleAdulte);
+            taille.ActionType = "Nouveau";
+            taille.TitreAction = "Ajouter une taille Enfant";
+            return View("Editer", taille);
         }
 
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Detail(int id)
         {
-            string query = @"SELECT *
-                              FROM taille_adultes 
-                           WHERE id=@identifiant";
+            string query = "SELECT * FROM tailles WHERE id=@identifiant";
 
-            TailleAdulte taileAdultes;
+            Taille tailleEnfant;
 
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
                 try
                 {
-                    taileAdultes = connexion.QuerySingle<TailleAdulte>(query, new { identifiant = id });
+                    tailleEnfant = connexion.QuerySingle<Taille>(query, new { identifiant = id });
                 }
                 catch (System.Exception)
                 {
@@ -120,54 +122,54 @@ namespace RevendTout.Controllers
                 }
 
             }
-            return View(taileAdultes);
+            return View(tailleEnfant);
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet] //décorateur 
         public IActionResult Modifier([FromRoute] int id)
         {
             // récupération de la taille à modifier
-            string query = "SELECT * FROM taille_adultes WHERE id = @id";
+            string query = "SELECT * FROM tailles WHERE id = @id";
 
-            TailleAdulte tailleAdulte; // je vais récupèrer une catégorie
+            Taille taille; // je vais récupèrer une catégorie
 
 
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
-                tailleAdulte = connexion.QueryFirstOrDefault<TailleAdulte>(query, new { id = id }); // j'ai ma tailleAdulte               
+                taille = connexion.QueryFirstOrDefault<Taille>(query, new { id = id }); // j'ai ma taille               
             }
 
-            // si l'utilisateur veut modifier une tailleAdulte qui n'existe pas, on aura null
-            if (tailleAdulte == null)
+            // si l'utilisateur veut modifier une taille qui n'existe pas, on aura null
+            if (taille == null)
             {
                 return NotFound(); // erreur 404
             }
 
-            var model = new EditionTailleAdulteViewModel();
-            // je met les données de ma tailleAdulte dans mon viewModel
-            model.Taille = tailleAdulte.Taille;
+            var model = new EditionTailleViewModel();
+            // je met les données de ma taille dans mon viewModel
+            model.Nom = taille.Nom;
 
 
             model.ActionType = "Modifier";
-            model.TitreAction = "Modifier la taille : " + model.Taille;
+            model.TitreAction = "Modifier la taille : " + model.Nom;
             return View("Editer", model); // je retourne la vue Editer en lui donnant mon ViewModel
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public IActionResult Modifier([FromForm] EditionTailleAdulteViewModel tailleAdulte)
+        public IActionResult Modifier([FromForm] EditionTailleViewModel taille)
         {
             //Verifier si le modèle est valide, si c'est pas le cas on renvoie le formulaire, on réuccpères les informations rentrées précédement
             if (!ModelState.IsValid)
             {
-                tailleAdulte.ActionType = "Modifier";
-                tailleAdulte.TitreAction = "Modifier la taille : " + tailleAdulte.Taille;
-                return View("Editer", tailleAdulte); // je retourne la vue Editer en lui donnant mon ViewModel
+                taille.ActionType = "Modifier";
+                taille.TitreAction = "Modifier la taille : " + taille.Nom;
+                return View("Editer", taille); // je retourne la vue Editer en lui donnant mon ViewModel
             }
 
 
-            string queryProduit = "UPDATE taille_adultes SET taille=@taille WHERE id=@id; ";
+            string queryProduit = "UPDATE tailles SET nom=@nom WHERE id=@id; ";
 
             int resUpdateTaille;
 
@@ -180,8 +182,8 @@ namespace RevendTout.Controllers
                 {   // bloc try=> on essaye
                     try
                     {
-                        /* update de la categorie */
-                        resUpdateTaille = connexion.Execute(queryProduit, tailleAdulte);
+                        /* update de la taille */
+                        resUpdateTaille = connexion.Execute(queryProduit, taille);
 
                         if (resUpdateTaille != 1)
                         {
@@ -192,13 +194,13 @@ namespace RevendTout.Controllers
                             tran.Commit();
                             TempData["ValidateMessage"] = "taille modifié avec succès !";
 
-                            return RedirectToAction("Detail", new { id = tailleAdulte.Id });
+                            return RedirectToAction("Detail", new { id = taille.Id });
                         }
                     }
-                    catch (PostgresException e) when (e.MessageText.Contains("taille_adultes_unique")) // violation de contrainte d'unicité sur le titre || _unique veut dire key primaire
+                    catch (PostgresException e) when (e.MessageText.Contains("taille_unique")) // violation de contrainte d'unicité sur le titre || _unique veut dire key primaire
                     {
                         tran.Rollback();
-                        ModelState.AddModelError("Titre", "Ce nom est déjà utilisé par une autre categorie dans la BDD.");
+                        ModelState.AddModelError("Titre", "Cette taille est déjà utilisée.");
                     }
                     catch (InvalidOperationException e)
                     {
@@ -208,17 +210,18 @@ namespace RevendTout.Controllers
 
                     // si tout ne s'est pas bien passé
 
-                    tailleAdulte.ActionType = "Modifier";
-                    tailleAdulte.TitreAction = "Modifier la taille adulte : " + tailleAdulte.Taille;
-                    return View("Editer", tailleAdulte); // je retourne la vue Editer en lui donnant mon ViewModel
+                    taille.ActionType = "Modifier";
+                    taille.TitreAction = "Modifier la taille adulte : " + taille.Nom;
+                    return View("Editer", taille); // je retourne la vue Editer en lui donnant mon ViewModel
                 }
             }
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Supprimer(int id)
         {
-            string queryDeleteProduitTaille = "DELETE FROM produit_tailles_adultes WHERE taille_adultes = @id";
-            string queryDeleteTaille = "DELETE FROM taille_adultes WHERE id = @id";
+            string queryDeleteProduitTaille = "DELETE FROM produit_tailles WHERE taille_id = @id";
+            string queryDeleteTaille = "DELETE FROM tailles WHERE id = @id";
             int res;
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
@@ -261,3 +264,4 @@ namespace RevendTout.Controllers
 
     }
 }
+

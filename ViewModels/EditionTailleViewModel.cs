@@ -2,9 +2,8 @@
 
 namespace RevendTout.ViewModels
 {
-    public class EditionTailleAdulteViewModel
+    public class EditionTailleViewModel
     {
-
         //ActionType => permet de dire si je suis en nouveau ou en modifier
         public string ActionType { get; set; } = string.Empty; // il créer une chaine qui est vide (Empty)
         public string TitreAction { get; set; } = string.Empty; // il créer une chaine qui est vide (Empty)
@@ -12,6 +11,6 @@ namespace RevendTout.ViewModels
 
 
         [Required(ErrorMessage = "La taille est obligatoire.")]
-        public string? Taille { get; set; }
+        public string? Nom { get; set; }
     }
 }
