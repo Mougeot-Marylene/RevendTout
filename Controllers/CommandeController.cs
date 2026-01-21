@@ -37,12 +37,10 @@ namespace RevendTout.Controllers
             // récupèration de l'id personne connectée
             int id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+            // Je déclare une liste de CommandeViewModel qui contiendra les commandes de l'utilisateur
             List<CommandeViewModel> commandes;
 
-            /* COALESCE => permet de combiner des colonnes, 
-                 au lieu de me retouner plusieurs ligne je fusionne les colone pour en retourner qu'une 
-                    comment ? => en comptant le nombre total de produits pour cette commande_id COALESCE(SUM(cp.quantite), 0) et le montant total de tous les produits ( COALESCE(SUM(p.prix * cp.quantite), 0) 
-             */
+            // Requête SQL pour récupérer les données des commandes de l'utilisateur
             string queryCommandes =
                 @"SELECT 
                     c.id AS Numero,
@@ -57,17 +55,21 @@ namespace RevendTout.Controllers
                 WHERE c.utilisateur_id = @id
                 GROUP BY c.id, c.statut_commandes_id, c.date_creation, st.label";
 
+            // j'ouvre une connexion à la base de données dans un bloc using (qui se ferme à al fin de l'execution)
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
+                // bloc d'essaie pour executer le code suivant
                 try
                 {
-                  commandes = connexion.Query<CommandeViewModel>(queryCommandes, new { id }).ToList();
+                    // Ouvre la connexion, exécute la requête, transforme  (mapper) chaque ligne de résultat en objet CommandeViewModel, et récupère la liste des commandes de l’utilisateur.
+                    commandes = connexion.Query<CommandeViewModel>(queryCommandes, new { id }).ToList();
 
-
+                    // Retourne la vue avec la liste des commandes
                     return View(commandes);
                 }
                 catch
                 {
+                    // si il y a un problème on affiche le message
                     throw new InvalidOperationException("L'affichage des commandes à échoué. Veuillez réessayer plus tard.");
                 }
             }

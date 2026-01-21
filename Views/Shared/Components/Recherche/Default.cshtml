@@ -1,0 +1,19 @@
+﻿@using RevendTout.ViewModels
+@model RechercheViewModel // déclare le type du modèle utilisé dans la vue
+
+@* asp-controller et asp-action définissent vers où envoyer le formulaire *@
+
+<form asp-controller="Produit" asp-action="Recherche" method="get">
+    <!-- Liste déroulante pour les catégories -->
+        @* asp-for lie automatiquement les propriétés du modèle aux éléments HTML *@
+        @*  asp-items remplit la liste déroulante avec les items du ViewModel *@
+    <select asp-for="@Model.CategorieId" asp-items="@Model.Categories">
+        <option value="">-- Toutes les catégories --</option>
+    </select>
+
+    <!-- Champ de texte pour le terme de recherche -->
+    <input asp-for="@Model.TermeRecherche" placeholder="Rechercher des produits" />
+
+    <!-- Bouton de soumission -->
+    <button class="btn_recherche" type="submit">Rechercher</button>
+</form>

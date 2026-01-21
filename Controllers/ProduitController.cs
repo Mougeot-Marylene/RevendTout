@@ -545,7 +545,6 @@ namespace RevendTout.Controllers
         }
 
 
-
         public IActionResult Archiver(int id)
         {
             string queryUpdateProduitArchive = @"UPDATE Produits
@@ -582,5 +581,34 @@ namespace RevendTout.Controllers
 
         }
 
+        [HttpGet]
+        public IActionResult Recherche(string? termeRecherche, int? categorieId)
+        {
+            List<Produit> produits = new List<Produit>();
+
+            string query = @"
+                            SELECT DISTINCT p.*  
+                            FROM Produits p
+                            LEFT JOIN produit_categories pc ON p.id = pc.produit_id
+                            WHERE 1=1 ";
+
+            // Ajouter des filtres selon les paramètres
+            if (!string.IsNullOrEmpty(termeRecherche))
+            {
+                query += $" AND p.nom LIKE '%{termeRecherche}%'";
+            }
+
+            if (categorieId.HasValue)
+            {
+                query += $" AND pc.categorie_id = {categorieId}";
+            }
+
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            {
+                produits = connexion.Query<Produit>(query).ToList();
+            }
+
+            return View("Index", produits);
+        }
     }
 }

@@ -7,7 +7,6 @@ namespace RevendTout.ViewModels
     {
         public string Numero { get; set; }
         public string Statut { get; set; }
-        public string Test { get; set; }
         public DateTime Date { get; set; }
         public int NombreArticles { get; set; }
         public decimal Montant { get; set; }

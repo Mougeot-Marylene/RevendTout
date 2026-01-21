@@ -17,10 +17,10 @@
         <header>
             <nav class="navbar ">
                 <a asp-area="" asp-controller="Produit" asp-action="Index"><img class="logo" src="/images/logo.png" alt="Logo" /></a>
+                
                 <div>
-                    <input type="search" id="site-search" name="q" placeholder="Recherche..." />
-
-                    <button class="btn_recherche">Rechercher</button>
+                    @* Utiliser @await car InvokeAsync() est asynchrone (asynchrone signifie simplement que l’ordinateur peut lancer une tâche et continuer à faire autre chose sans attendre que cette tâche soit finie.) *@
+                    @await Component.InvokeAsync("Recherche") 
                 </div>
                 <div class="panier_login">
                     <div>
