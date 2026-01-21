@@ -1,0 +1,82 @@
+﻿@using RevendTout.ViewModels
+@model List<CommandeViewModel>
+
+@{
+    ViewData["Title"] = "Commandes";
+}
+<div>
+    <a asp-area=""
+       asp-controller="produit"
+       asp-action="Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+
+
+<br />
+
+<section>
+
+    <div>
+        <h3 class="c_noir">Mes commandes</h3>
+
+        <br />
+
+        <table>
+            <tr>
+                <th>Numéro</th>
+                <th>Date</th>
+                <th>Nombre articles</th>
+                <th>Montant</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                if (item.Statut == "En attente" || item.Statut == "En cours")
+                {
+
+                    <tr>
+                        <td>N°@item.Numero - @item.Statut</td>
+                        <td>@item.Date</td>
+                        <td>@item.NombreArticles</td>
+                        <td>@item.Montant</td>
+                    </tr>
+                }
+            }
+        </table>
+
+    </div>
+    <br />
+    <hr />
+
+    <h5 class="c_noir">Commande finalisées</h5>
+
+    <div>
+
+        <table>
+            <tr>
+                <th>Numéro</th>
+                <th>Date</th>
+                <th>Nombre articles</th>
+                <th>Montant</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                if (item.Statut == "Validée" || item.Statut == "Expédiée" || item.Statut == "Annulée")
+                {
+
+                    <tr>
+                        <td>N°@item.Numero - @item.Statut</td>
+                        <td>@item.Date</td>
+                        <td>@item.NombreArticles</td>
+                        <td>@item.Montant</td>
+                    </tr>
+                }
+            }
+        </table>
+
+    </div>
+
+
+</section>
+

@@ -16,7 +16,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     // cookies is needed for a given request.
     options.CheckConsentNeeded = context => true;
 
-    options.MinimumSameSitePolicy = SameSiteMode.None;
+    options.MinimumSameSitePolicy = SameSiteMode.Lax;
 
     options.ConsentCookieValue = "true";
 });
