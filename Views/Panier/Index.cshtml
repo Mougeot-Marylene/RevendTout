@@ -1,9 +1,18 @@
-﻿@using RevendTout.ViewModels
+﻿﻿@using RevendTout.ViewModels
 @model PanierViewModel
 
 @{
     ViewData["Title"] = "Panier";
 }
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge" >@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
+
 <div>
     <a asp-area=""
        asp-controller="produit"
@@ -28,12 +37,11 @@
 
                     @{
                         var premiereImage = item.Key.Images.OrderBy(img => img.Id).FirstOrDefault();
+                        string urlImage = premiereImage != null ? premiereImage.Url : "/images/image_defaut_produit.webp";
                     }
 
-                    @if (premiereImage != null)
-                    {
-                        <img class="img_prod" src="@premiereImage.Url" alt="Image du produit @item.Key.Nom" />
-                    }
+                    <img class="img_prod" src="@urlImage" alt="Image du produit @item.Key.Nom" />
+
 
                     <div class="bloc_donnees">
 
@@ -149,7 +157,7 @@
                 </div>
                 <br />
 
-                <div class="c_noir recap_prix">Vous économisez <span class="c_rouge"> @Model.TotalReduction&#8364</span></div>
+                <div class="c_noir">Vous économisez <span class="c_rouge"> @Model.TotalReduction&#8364</span></div>
                 <br />
 
                 <hr />
@@ -165,7 +173,7 @@
 
                 <br />
                 <form asp-controller="Panier"
-                      asp-action="DiminuerQuantite"
+                      asp-action="Paiement"
                       method="post" class="form_recap">
                     <input type="submit" value="Validez mon panier" class="btn_recap" />
                 </form>
@@ -176,4 +184,8 @@
 }else{
 
     <h2 class="c_verte text-center"> Votre panier est vide</h2>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

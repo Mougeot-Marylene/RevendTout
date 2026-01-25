@@ -8,6 +8,14 @@
 @section Styles {
     <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
 }
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
 
 @if (TempData.ContainsKey("ValidateMessage"))
 {

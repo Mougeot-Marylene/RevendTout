@@ -5,6 +5,14 @@
 @section Styles {
     <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
 }
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
 
 <div>
     <a asp-area=""
@@ -114,10 +122,15 @@
                 </a>
             </div>
 
+            <div>
+                Nombre de vente :<span class="c_verte"> @Model.Score_vente</span>
+            </div>
+
 
             @if (Model.Quantite > 0)
             {
-                <p class="c_verte">En stock</p>
+                <p>En stock :<span class="c_verte"> @Model.Quantite</span></p>
+
             }
             else
             {

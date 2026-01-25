@@ -4,10 +4,19 @@
     ViewData["Title"] = "Détail de la catégorie";
     Layout = "_LayoutAdmin";
 }
+
 @section Styles {
     <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
 }
 
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
 <div>
     <a asp-area=""
        asp-controller="Categorie"

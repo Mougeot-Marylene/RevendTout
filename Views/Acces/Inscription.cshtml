@@ -7,13 +7,12 @@
 }
 @if (ViewData.ContainsKey("ValidateMessage"))
 {
-    <p>@ViewData["ValidateMessage"]</p>
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
 }
 @if (TempData.ContainsKey("ValidateMessage"))
 {
-    <p>@TempData["ValidateMessage"]</p>
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
 }
-
 
 
 <h1>Bienvenue chez RevendTout <img width="38" height="38" src="https://img.icons8.com/emoji/48/waving-hand-emoji.png" alt="waving-hand-emoji" /></h1>

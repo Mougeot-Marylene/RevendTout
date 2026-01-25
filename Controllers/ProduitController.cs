@@ -492,7 +492,7 @@ namespace RevendTout.Controllers
         {
             string query = @"
                             SELECT 
-                                p.id, p.nom, p.desc_courte, p.description, p.reduction, p.prix,
+                                p.id, p.nom, p.desc_courte, p.description, p.reduction, p.prix, p.quantite, p.score_vente,
                                 i.id AS ImageId, i.produit_id AS ImageProduitId, i.url, i.description AS ImageDescription,
                                 t.id AS TailleId, t.nom AS Nom
                             FROM Produits p
@@ -606,6 +606,15 @@ namespace RevendTout.Controllers
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
                 produits = connexion.Query<Produit>(query).ToList();
+                // APRÈS avoir récupéré produits
+                foreach (var produit in produits)
+                {
+                    produit.Images = connexion.Query<Image>(
+                        "SELECT * FROM Images WHERE produit_id = @id ORDER BY id",
+                        new { id = produit.Id }
+                    ).ToList();
+                }
+
             }
 
             return View("Index", produits);

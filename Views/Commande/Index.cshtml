@@ -1,8 +1,13 @@
 ﻿@using RevendTout.ViewModels
 @model List<CommandeViewModel>
 
-@{
-    ViewData["Title"] = "Commandes";
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
 }
 <div>
     <a asp-area=""

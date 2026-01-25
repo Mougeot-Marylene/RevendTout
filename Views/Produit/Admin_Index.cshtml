@@ -6,7 +6,14 @@
 @section Styles {
     <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
 }
-
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
 
 
 <div class="bloc_donnees">
@@ -27,6 +34,8 @@
                 <th scope="col">Nom</th>
                 <th scope="col">Description</th>
                 <th scope="col">prix</th>
+                <th scope="col">Quantite</th>
+                <th scope="col">Nb vente</th>
                 <th scope="col">Afficher</th>
                 <th scope="col">Modifier</th>
                 <th scope="col">Archiver</th>
@@ -39,32 +48,10 @@
                     @if (produit.Archive == true)
                     {
                         <th class="bg_rouge" scope="row">@produit.Nom</th>
-                    }
-                    else
-                    {
-                        <th scope="row">@produit.Nom</th>
-                    }
-
-                    @if (produit.Archive == true)
-                    {
                         <td class="bg_rouge">@produit.Desc_courte</td>
-                    }
-                    else
-                    {
-                        <td>@produit.Desc_courte</td>
-                    }
-
-                    @if (produit.Archive == true)
-                    {
                         <td class="bg_rouge">@produit.Prix&euro;</td>
-                    }
-                    else
-                    {
-                        <td>@produit.Prix&euro;</td>
-                    }
-
-                    @if (produit.Archive == true)
-                    {
+                        <td class="bg_rouge">@produit.Quantite</td>
+                        <td class="bg_rouge">@produit.Score_vente</td>
                         <td class="bg_rouge">
                             <a asp-area=""
                                asp-controller="Produit"
@@ -74,21 +61,7 @@
                                 Détail
                             </a>
                         </td>
-                    }
-                    else
-                    {
-                        <td>
-                            <a asp-area=""
-                               asp-controller="Produit"
-                               asp-action="Admin_Index_Detail"
-                               asp-route-id="@produit.Id"
-                               class="link-success">
-                                Détail
-                            </a>
-                        </td>
-                    }
-                    @if (produit.Archive == true)
-                    {
+
                         <td class="bg_rouge">
                             <a asp-area=""
                                asp-controller="Produit"
@@ -98,28 +71,39 @@
                                 Modifier
                             </a>
                         </td>
-                    }
-                    else
-                    {
-                        <td>
-                            <a asp-area=""
-                               asp-controller="Produit"
-                               asp-action="Modifier"
-                               asp-route-id="@produit.Id"
-                               class="link-success">
-                                Modifier
-                            </a>
-                        </td>
-                    }
 
-                    @if (produit.Archive == true)
-                    {
+
                         <td scope="col" class="bg_rouge">
                             <div class="c_verte"><img width="18" height="18" src="https://img.icons8.com/parakeet/18/checked-checkbox--v1.png" alt="checked-checkbox--v1" /> archivé</div>
                         </td>
-                    }
+                    }   
                     else
                     {
+                        <th scope="row">@produit.Nom</th>
+                        <td>@produit.Desc_courte</td>
+                        <td>@produit.Prix&euro;</td>
+                        <td>@produit.Quantite</td>
+                        <td>@produit.Score_vente</td>
+                        <td>
+                            <a asp-area=""
+                               asp-controller="Produit"
+                               asp-action="Admin_Index_Detail"
+                               asp-route-id="@produit.Id"
+                               class="link-success">
+                                Détail
+                            </a>
+                        </td>
+
+                        <td>
+                            <a asp-area=""
+                               asp-controller="Produit"
+                               asp-action="Modifier"
+                               asp-route-id="@produit.Id"
+                               class="link-success">
+                                Modifier
+                            </a>
+                        </td>
+
                         <td scope="col">
                             <a asp-area=""
                                asp-controller="Produit"
@@ -131,13 +115,14 @@
                         </td>
                     }
 
+
                 </tr>
 
             }
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="7"></th>
+                <th colspan="8"></th>
             </tr>
         </tfoot>
     </table>

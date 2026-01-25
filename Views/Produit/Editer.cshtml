@@ -8,14 +8,13 @@
     <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
 }
 
-
 @if (ViewData.ContainsKey("ValidateMessage"))
 {
-    <p>@ViewData["ValidateMessage"]</p>
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
 }
 @if (TempData.ContainsKey("ValidateMessage"))
 {
-    <p>@TempData["ValidateMessage"]</p>
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
 }
 
 <div class="actions_top">

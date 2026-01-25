@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using RevendTout.Models;
 using RevendTout.ViewModels;
-using System.Data;
-using System.Net.Http.Headers;
+using System;
+using System.Drawing;
 using System.Security.Claims;
+
 
 namespace RevendTout.Controllers
 {
@@ -32,7 +33,7 @@ namespace RevendTout.Controllers
                 throw new Exception("Error : Connexion string not found ! ");
             }
         }
-      
+
 
         [Authorize]
         public IActionResult Index()
@@ -47,86 +48,82 @@ namespace RevendTout.Controllers
                 {
                     try
                     {
-                        var panier = new PanierViewModel();
-
-                        // récupère l'id de l'utlisateur connecté
+                        // 1. Récupérer ou créer panier
                         string queryPanier = @"SELECT id FROM Paniers WHERE utilisateur_id = @id";
                         int panierId = connexion.QuerySingleOrDefault<int>(queryPanier, new { id }, transaction: transaction);
 
-                        // si l'utilisateur n'a pas de panier, on en créer un
                         if (panierId == 0)
                         {
-                            // créer un panier
-                            string insertPanier = " INSERT INTO Paniers (utilisateur_id)VALUES (@id) RETURNING id";
-
+                            string insertPanier = "INSERT INTO Paniers (utilisateur_id) VALUES (@id) RETURNING id";
                             panierId = connexion.ExecuteScalar<int>(insertPanier, new { id }, transaction: transaction);
                         }
 
-                        /* ***************************************************** */
-
-                        // 1. requête pour produits + quantités 
+                        // 2. Récupérer produits + images + quantités en une seule requête avec LEFT JOIN
                         string query = @"
-                                        SELECT prod.id, prod.nom, prod.prix, prod.reduction,
-                                               pa.quantite
-                                        FROM Produit_paniers pa
-                                        LEFT JOIN Produits prod ON pa.produit_id = prod.id
-                                        WHERE pa.panier_id = @panierId";
+                    SELECT p.id, p.nom, p.prix, p.reduction,
+                           i.id, i.produit_id, i.url, i.description,
+                           pa.quantite
+                    FROM Produit_paniers pa
+                    LEFT JOIN Produits p ON pa.produit_id = p.id
+                    LEFT JOIN Images i ON p.id = i.produit_id
+                    WHERE pa.panier_id = @panierId
+                    ORDER BY p.id";
 
-                        connexion.Query<Produit, int, Produit>(
+                        var produitDict = new Dictionary<int, Produit>();
+                        var quantiteDict = new Dictionary<int, int>(); // Pour stocker quantités par produit
+
+                        var result = connexion.Query<Produit, Image, int, Produit>(
                             query,
-                            (produit, quantite) =>
+                            (p, i, quantite) =>
                             {
-                                if (!panier.Produits.ContainsKey(produit))
-                                    panier.Produits.Add(produit, quantite);
-                                return produit;
+                                if (!produitDict.TryGetValue(p.Id, out var prodEntry))
+                                {
+                                    prodEntry = p;
+                                    prodEntry.Images = new List<Image>();
+                                    produitDict.Add(p.Id, prodEntry);
+                                    quantiteDict[p.Id] = quantite;
+                                }
+                                if (i != null)
+                                    prodEntry.Images.Add(i);
+                                return prodEntry;
                             },
                             new { panierId },
-                            splitOn: "quantite",
+                            splitOn: "id,quantite",
                             transaction: transaction
-                        ).ToList();
+                        );
 
-                        // 2. Requête pour récupérer images des produits récupérés
-                        var produitIds = panier.Produits.Keys.Select(p => p.Id).ToArray();
+                        // 3. Construire le ViewModel panier avec produits et quantités
+                        var panier = new PanierViewModel();
+                        panier.Produits = new Dictionary<Produit, int>();
 
-                        if (produitIds.Length > 0)
+                        foreach (var prod in produitDict.Values)
                         {
-                            // ANY(@ids) => vérifier si une valeur est égale à au moins un élément d'un tableau.
-                            string queryImages = "SELECT id, produit_id, url, description FROM Images WHERE produit_id = ANY(@ids)";
-
-                            var images = connexion.Query<Image>(queryImages, new { ids = produitIds }, transaction: transaction).ToList();
-
-
-                            // 3. Associer images aux produits du panier
-                            foreach (var produit in panier.Produits.Keys)
-                            {
-                                produit.Images = images.Where(img => img.ProduitId == produit.Id).ToList();
-                            }
+                            panier.Produits.Add(prod, quantiteDict[prod.Id]);
                         }
 
-
-                        // --- Calculs des totaux ---
+                        // 4. Calculs totaux comme avant
                         int totalArticles = 0;
                         decimal totalPrix = 0m;
-                        decimal TotalReduction = 0m;
+                        decimal totalReduction = 0m;
                         decimal totalSansReduction = 0m;
                         decimal totalAvecReduction = 0m;
+
                         foreach (var item in panier.Produits)
                         {
                             int quantite = item.Value;
-                            decimal? prix = item.Key.Prix;
-                            decimal? reduction = item.Key.Reduction;
+                            decimal prix = item.Key.Prix ?? 0;
+                            decimal reduction = item.Key.Reduction ?? 0;
 
                             totalArticles += quantite;
-                            totalSansReduction += (decimal)prix * quantite;
-                            totalAvecReduction += ((decimal)prix - (decimal)reduction) * quantite;
+                            totalSansReduction += prix * quantite;
+                            totalAvecReduction += (prix - reduction) * quantite;
 
-                            totalPrix += ((decimal)prix - (decimal)reduction) * quantite;
-                            TotalReduction += (totalSansReduction - totalAvecReduction);
+                            totalPrix += (prix - reduction) * quantite;
                         }
+
                         panier.TotalArticles = totalArticles;
                         panier.TotalPrix = totalPrix;
-                        panier.TotalReduction = TotalReduction;
-
+                        panier.TotalReduction = totalSansReduction - totalAvecReduction;
 
                         transaction.Commit();
 
@@ -135,7 +132,7 @@ namespace RevendTout.Controllers
                     catch
                     {
                         transaction.Rollback();
-                        throw;  // Ou gérer l'exception selon ton besoin
+                        throw;
                     }
                 }
             }
@@ -331,10 +328,385 @@ namespace RevendTout.Controllers
                     catch
                     {
                         transaction.Rollback();
-                                throw new InvalidOperationException("Une erreur c'est produite. Veuillez réessayer plus tard.");
+                        throw new InvalidOperationException("Une erreur c'est produite. Veuillez réessayer plus tard.");
                     }
                 }
             }
+        }
+
+        [Authorize]
+        public IActionResult Paiement()
+        {
+            int id_utilisateur = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            {
+                connexion.Open();
+
+                try
+                {
+                    // 1. Récupérer l'id du panier de l'utilisateur
+                    var panierId = connexion.QuerySingleOrDefault<int>(
+                        "SELECT id FROM Paniers WHERE utilisateur_id = @id_utilisateur",
+                        new { id_utilisateur });
+
+                    // 2. Récupérer produits + images + quantités
+                    string queryProduits = @"
+                SELECT p.id, p.nom, p.prix, p.reduction,
+                       i.id, i.produit_id, i.url, i.description,
+                       pa.quantite
+                FROM Produit_paniers pa
+                LEFT JOIN Produits p ON pa.produit_id = p.id
+                LEFT JOIN Images i ON p.id = i.produit_id
+                WHERE pa.panier_id = @panierId
+                ORDER BY p.id";
+
+                    var produitDict = new Dictionary<int, Produit>();
+                    var quantiteDict = new Dictionary<int, int>();
+
+                    var result = connexion.Query<Produit, Image, int, Produit>(
+                        queryProduits,
+                        (p, i, quantite) =>
+                        {
+                            if (!produitDict.TryGetValue(p.Id, out var prodEntry))
+                            {
+                                prodEntry = p;
+                                prodEntry.Images = new List<Image>();
+                                produitDict.Add(p.Id, prodEntry);
+                                quantiteDict[p.Id] = quantite;
+                            }
+                            if (i != null)
+                                prodEntry.Images.Add(i);
+                            return prodEntry;
+                        },
+                        new { panierId },
+                        splitOn: "id,id,quantite"
+                    );
+
+                    // 3. Récupérer l'utilisateur et son adresse
+                    string queryUtilisateur = @"
+                SELECT u.id, u.nom, u.prenom, u.adresse_id,
+                       a.id, a.numero_rue, a.nom_rue, a.code_postal, a.ville, a.pays
+                FROM Utilisateurs u
+                LEFT JOIN Adresses a ON u.adresse_id = a.id
+                WHERE u.id = @id_utilisateur";
+
+                    var utilisateur = connexion.Query<Utilisateur, Adresse, Utilisateur>(
+                        queryUtilisateur,
+                        (u, a) =>
+                        {
+                            u.Adresse = a;
+                            return u;
+                        },
+                        new { id_utilisateur },
+                        splitOn: "id"
+                    ).First();
+
+                    // 4. Construire le ViewModel
+                    var panier = new PanierViewModel
+                    {
+                        Utilisateur = utilisateur,
+                        Produits = new Dictionary<Produit, int>()
+                    };
+
+                    foreach (var prod in produitDict.Values)
+                    {
+                        panier.Produits.Add(prod, quantiteDict[prod.Id]);
+                    }
+
+                    // 5. Calcul des totaux
+                    int totalArticles = 0;
+                    decimal totalPrix = 0m;
+                    decimal totalReduction = 0m;
+                    decimal totalSansReduction = 0m;
+                    decimal totalAvecReduction = 0m;
+
+                    foreach (var item in panier.Produits)
+                    {
+                        int quantite = item.Value;
+                        decimal prix = item.Key.Prix ?? 0;
+                        decimal reduction = item.Key.Reduction ?? 0;
+
+                        totalArticles += quantite;
+                        totalSansReduction += prix * quantite;
+                        totalAvecReduction += (prix - reduction) * quantite;
+
+                        totalPrix += (prix - reduction) * quantite;
+                    }
+
+                    panier.TotalArticles = totalArticles;
+                    panier.TotalPrix = totalPrix;
+                    panier.TotalReduction = totalSansReduction - totalAvecReduction;
+
+                    return View(panier);
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
+
+        [Authorize]
+        public IActionResult Paiementverif(string NumCB, int code_cb)
+        {
+            int utilisateur_id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            string queryPanierId = @"SELECT id FROM Paniers WHERE utilisateur_id=@utilisateur_id";
+
+            int panierId;
+
+            using (var connexion = new NpgsqlConnection(_connexionString))
+            {
+                connexion.Open();
+
+                using (var transaction = connexion.BeginTransaction())
+                {
+                    try
+                    {
+                        // resultat requête qui récupère id du panier panier
+                        panierId = connexion.QuerySingle<int>(queryPanierId, new { utilisateur_id });
+
+
+                        // requêtte qui récupère les produit du panier
+                        string queryProduit = @"SELECT 
+                                                    pa.id AS PanierId,
+                                                    prod.id AS Id,
+                                                    prod.nom,
+                                                    prod.score_vente,
+                                                    prod.quantite AS Quantite,  
+                                                    pp.quantite AS QuantiteDansPanier 
+                                                FROM Paniers pa
+                                                LEFT JOIN Produit_paniers pp ON pa.id = pp.panier_id
+                                                LEFT JOIN Produits prod ON pp.produit_id = prod.id
+                                                WHERE pa.utilisateur_id=@utilisateur_id";
+
+                        // Dictionnaire pour regrouper les produits par panier
+                        var dictPanier = new Dictionary<int, PanierViewModel>();
+
+                        // Requête pour récupérer les produits (mapping)
+                        var result = connexion.Query<PanierViewModel, Produit, int, PanierViewModel>(
+                            queryProduit,
+                            (panier, produit, quantiteDansPanier) =>
+                            {
+                                if (!dictPanier.TryGetValue(panier.PanierId, out var panierVm))
+                                {
+                                    panierVm = panier;
+                                    panierVm.Produits = new Dictionary<Produit, int>();
+                                    dictPanier.Add(panierVm.PanierId, panierVm);
+                                }
+
+                                if (produit != null)
+                                {
+                                    panierVm.Produits[produit] = quantiteDansPanier;
+                                }
+
+                                // verifier que le nombre de quantite est suffisant poru comamnder le produit 
+                                if (quantiteDansPanier > produit.Quantite)
+                                {
+                                    throw new InvalidOperationException($"La quantité de produit {produit.Nom} pour et manquante.");
+                                }
+
+                                return panierVm;
+                            },
+                            new { utilisateur_id },
+                            splitOn: "Id,QuantiteDansPanier"
+                        ).Distinct().ToList();
+
+
+                        /* ============================= */
+                        /* Carte bancaire  */
+                        /* ============================= */
+
+                        // Convertir en tableau de caractères pour pouvoir modifier mes doénnes
+                        char[] tabNumCB = NumCB.ToCharArray();
+
+                        for (int index = tabNumCB.Length - 2; index >= 0; index -= 2)
+                        {
+                            int num = int.Parse(tabNumCB[index].ToString());
+                            int nouvNum = num * 2;
+
+                            if (nouvNum > 9)
+                            {
+                                nouvNum -= 9;
+                            }
+
+                            // On remplace le num de l'iindex par le nouveau chiffre
+                            tabNumCB[index] = nouvNum.ToString()[0];
+                            
+                        }
+
+                        // Reconstruire la chaîne modifiée
+                        string nouvelleCB = new string(tabNumCB);
+
+                        int somme = 0;
+                        // faire la somme de la nouvelle chaine
+                        for (int i = 0; i < nouvelleCB.Length; i++)
+                        {
+                            somme = somme + int.Parse(nouvelleCB[i].ToString());
+                        }
+
+                        // reucpère le dernier chiffre de la somme
+                        string str = somme.ToString();
+
+                        string dernierChiffre = str.Substring(str.Length - 1);
+
+
+                        if (dernierChiffre != "0")
+                        {
+                            throw new InvalidOperationException($"Votre carte bancaire n'est pas valide, veuillez ressayer.");
+                        }
+                      
+                        // compte le nombre de numero de la carte
+                        int CountNumCB = (tabNumCB.Length);
+                        //l'index commence à 0 donc ça fait 15 chiffres
+                        if (CountNumCB != 16)
+                        {
+                            throw new InvalidOperationException("Le numéro de carte bancaire doit contenir exactement 16 chiffres.");
+                        }
+
+                        // partie cvv (3 numero derriere la carte)
+                        string myStringCVV = code_cb.ToString();
+
+                        code_cb = (myStringCVV.Length);
+
+                        if (code_cb != 3)
+                        {
+                            throw new InvalidOperationException("Le CVV de carte bancaire doit contenir exactement 3 chiffres.");
+                        }
+
+
+                        /* ============================= */
+                        /* Recuperation produit et quantite  */
+                        /* ============================= */
+
+                        // 3. Construire une liste des produits + quantités à utiliser plus tard
+                        var produitsCommande = new List<(int produitId, int quantite)>();
+                        //  on vérifie les quantités et on fait les updates
+                        foreach (var panierVm in dictPanier.Values)
+                        {
+                            foreach (var kvp in panierVm.Produits)
+                            {
+                                var produit = kvp.Key;
+                                int quantiteDansPanier = kvp.Value;
+
+                                if (quantiteDansPanier > produit.Quantite)
+                                {
+                                    throw new InvalidOperationException($"La quantité de produit {produit.Nom} est insuffisante.");
+                                }
+
+                                // Mettre à jour la liste produitsCommande
+                                produitsCommande.Add((produit.Id, quantiteDansPanier));
+
+                                // Diminuer la quantite au produit  
+                                int? nouvelleQuant = produit.Quantite - quantiteDansPanier;
+                                // Augmenter le score de vente 
+                                int? nouvScorVente = produit.Score_vente + quantiteDansPanier;
+
+                                var parametresUpdate = new { nouvelleQuant, nouvScorVente, id = produit.Id };
+
+                                int resUpdate = connexion.Execute(
+                                    "UPDATE Produits SET quantite = @nouvelleQuant , score_vente = @nouvScorVente WHERE id = @id",
+                                    parametresUpdate,
+                                    transaction: transaction);
+
+                                if (resUpdate != 1)
+                                {
+                                    throw new InvalidOperationException("Une erreur est survenue lors de la mise à jour du produit.");
+                                }
+
+                            }
+                        }
+
+
+                        /* ============================= */
+                        /* Commande  */
+                        /* ============================= */
+
+                        string queryComande = "INSERT INTO Commandes (utilisateur_id, statut_commandes_id) VALUES (@utilisateur_id, 1) returning id";
+
+                        int resCom = connexion.ExecuteScalar<int>(queryComande, new { utilisateur_id });
+
+                        if (resCom <= 0)
+                        {
+                            throw new InvalidOperationException("Une erreur est survenue lors de la mise à jour du produit.");
+                        }
+
+
+                        /* ============================= */
+                        /* Commande_produit */
+                        /* ============================= */
+
+                        string queryComandePROD = "INSERT INTO Commande_produit (commande_id, produit_id, quantite) VALUES (@commandeId, @produitId, @quantite)";
+                        if (produitsCommande.Count == 0)
+                        {
+                            throw new InvalidOperationException("La liste des produits à commander est vide.");
+                        }
+                        foreach (var item in produitsCommande)
+                        {
+                            int resCommProd = connexion.Execute(queryComandePROD, new
+                            {
+                                commandeId = resCom,
+                                produitId = item.produitId,
+                                quantite = item.quantite
+                            }, transaction);
+
+                            if (resCommProd != 1)
+                            {
+                                throw new InvalidOperationException("Une erreur est survenue lors de l'insertion des produits de la commande.");
+                            }
+                        }
+
+                        /* ============================= */
+                        /* Panier  */
+                        /* ============================= */
+                        // compter le nom de ligne dans produit_panier par rapport a l'id du panier
+                        string nbCount = "SELECT COUNT(*) FROM Produit_paniers WHERE panier_id=@panierId";
+
+                        int resCount = connexion.ExecuteScalar<int>(nbCount, new { panierId });
+
+                        // supprime le panier dans produit_panier
+                        string supPanierProd = "DELETE FROM Produit_paniers WHERE panier_id=@panierId ";
+                        int resSupPanProd = connexion.Execute(supPanierProd, new { panierId });
+                        if (resSupPanProd != resCount)
+                        {
+                            throw new InvalidOperationException("Une erreur est survenue lors de la mise à jour du produit.");
+                        }
+                        // supprime panier
+                        string supPanier = "DELETE FROM Paniers WHERE id=@panierId ";
+                        int resSupPan = connexion.Execute(supPanier, new { panierId });
+
+                        if (resSupPan != 1)
+                        {
+                            throw new InvalidOperationException("Une erreur est survenue lors de la mise à jour du produit.");
+                        }
+
+
+                        transaction.Commit();
+                        TempData["ValidateMessage"] = "Paiement Validé !";
+                        return RedirectToRoute(new
+                        {
+                            controller = "Commande",
+                            action = "Index",
+                        });
+
+                    }
+
+                    catch (InvalidOperationException e)
+                    {
+                        transaction.Rollback();
+                        TempData["ValidateMessage"] = e.Message;
+                        return RedirectToAction("Index");
+
+                    }
+
+                }
+
+
+            }
+
+
         }
 
     }

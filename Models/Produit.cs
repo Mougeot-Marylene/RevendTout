@@ -9,7 +9,7 @@
         public decimal? Prix { get; set; }
         public decimal? Reduction { get; set; }
         public int? Quantite { get; set; }
-        public int? ScoreVente { get; set; }
+        public int? Score_vente { get; set; }
         public DateTime DateCreation { get; set; }
         public bool? Archive { get; set; }
 
