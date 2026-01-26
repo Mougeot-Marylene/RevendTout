@@ -33,3 +33,47 @@ Array.from(document.getElementsByClassName("btn_archive")).forEach(lien => {
         }
     })
 });
+
+
+async function DateLivraison(zipcode) {
+    console.log("Code postal :", zipcode);
+    const url = "https://api-filrouge.2isa.eu/api/v1/shippingaddress?zipcode=" + zipcode;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+        const result = await response.json();
+        console.log("distance : " + result.distanceKM + "KM");
+
+        let nbKm = 0;
+        let nbJour = 1; // 1 jour pour la préparation
+
+        // 30 nb de km par jour
+        nbKm = result.distanceKM / 30;
+        console.log("nbKm par jour :", nbKm);
+
+        // je transforme en chaine de caractère pour recup le premier nombre et l'arrondir au nombre supp
+        let kmFirst = nbKm.toString();
+        
+        const index = 0;
+        // je recup le premier caractère (index = 0)
+        let kmArr = kmFirst.at(index)
+
+        //je convertie le sting en int
+        let parseNb = parseInt(kmArr);
+
+        // je calcul le 1er nombre (1 jour de prepa, + le 1er num de distance + 1 (pour arrondir au supp))
+        nbJour = nbJour + (parseNb + 1);
+        console.log(`Nombre de jour ${nbJour}`);
+
+        let jour = document.getElementById('jour');
+        jour.textContent = 'Nouveau Titre';
+        document.getElementById('jour').textContent = nbJour + " jours";
+
+        
+
+    } catch (error) {
+        console.error(error.Message);
+    }
+}

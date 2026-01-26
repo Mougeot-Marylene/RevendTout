@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using RevendTout.Models;
 using RevendTout.ViewModels;
 using System.Security.Claims;
 
@@ -11,6 +12,7 @@ namespace RevendTout.Controllers
     {
         // attribut stockant la chaîne de connexion à la base de données
         private readonly string _connexionString;
+        private object _dbContext;
 
         /// <summary>
         /// Constructeur de ProduitsController
@@ -55,6 +57,13 @@ namespace RevendTout.Controllers
                 WHERE c.utilisateur_id = @id
                 GROUP BY c.id, c.statut_commandes_id, c.date_creation, st.label";
 
+            //Recup code postal
+            string queryCodePost = @"SELECT 
+                                        a.code_postal 
+                                    FROM utilisateurs u
+                                    LEFT JOIN adresses a ON u.adresse_id = a.id 
+                                    WHERE u.id = @id";
+            
             // j'ouvre une connexion à la base de données dans un bloc using (qui se ferme à al fin de l'execution)
             using (var connexion = new NpgsqlConnection(_connexionString))
             {
@@ -63,7 +72,8 @@ namespace RevendTout.Controllers
                 {
                     // Ouvre la connexion, exécute la requête, transforme  (mapper) chaque ligne de résultat en objet CommandeViewModel, et récupère la liste des commandes de l’utilisateur.
                     commandes = connexion.Query<CommandeViewModel>(queryCommandes, new { id }).ToList();
-
+                    int codePost = connexion.ExecuteScalar<int>(queryCodePost, new {id});
+                    ViewData["zipCode"] = codePost;
                     // Retourne la vue avec la liste des commandes
                     return View(commandes);
                 }
@@ -75,5 +85,6 @@ namespace RevendTout.Controllers
             }
 
         }
+
     }
 }

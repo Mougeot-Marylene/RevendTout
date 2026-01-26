@@ -10,6 +10,7 @@ namespace RevendTout.ViewModels
         public DateTime Date { get; set; }
         public int NombreArticles { get; set; }
         public decimal Montant { get; set; }
-        
+
+    
     }
 }

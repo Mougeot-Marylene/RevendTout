@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using RevendTout.Models;
 using RevendTout.ViewModels;
-using System;
-using System.Drawing;
 using System.Security.Claims;
 
 
@@ -15,6 +13,7 @@ namespace RevendTout.Controllers
     {
         // attribut stockant la chaîne de connexion à la base de données
         private readonly string _connexionString;
+        private object _dbContext;
 
         /// <summary>
         /// Constructeur de ProduitsController
@@ -708,6 +707,7 @@ namespace RevendTout.Controllers
 
 
         }
+
 
     }
 }

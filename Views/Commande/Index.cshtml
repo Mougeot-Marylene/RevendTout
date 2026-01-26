@@ -37,7 +37,7 @@
             </tr>
             @foreach (var item in Model)
             {
-                if (item.Statut == "En attente" || item.Statut == "En cours")
+                if (item.Statut == "En cours")
                 {
 
                     <tr>
@@ -45,9 +45,16 @@
                         <td>@item.Date</td>
                         <td>@item.NombreArticles</td>
                         <td>@item.Montant</td>
+                        
+                    </tr>
+                    <tr>
+                        <th colspan="4" class="c_verte">Livraison approximative : <span class="c_noir" id="jour"> jours</span>  </th>
+
                     </tr>
                 }
+
             }
+           
         </table>
 
     </div>
@@ -67,7 +74,7 @@
             </tr>
             @foreach (var item in Model)
             {
-                if (item.Statut == "Validée" || item.Statut == "Expédiée" || item.Statut == "Annulée")
+                if (item.Statut == "Validée")
                 {
 
                     <tr>
@@ -85,3 +92,10 @@
 
 </section>
 
+<script src="~/js/site.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        DateLivraison("@ViewData["zipCode"]");
+    });
+</script>

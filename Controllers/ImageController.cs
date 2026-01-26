@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using RevendTout.ViewModels;
-using System.Linq;
 
 namespace RevendTout.Controllers
 {
