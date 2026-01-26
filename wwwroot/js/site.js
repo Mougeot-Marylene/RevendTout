@@ -47,8 +47,8 @@ async function DateLivraison(zipcode) {
         console.log("distance : " + result.distanceKM + "KM");
 
         let nbKm = 0;
-        let nbJour = 1; // 1 jour pour la préparation
-
+        let nbJourPrepa = 1; // 1 jour pour la préparation
+        let jour = 0; // nombre jour final
         // 30 nb de km par jour
         nbKm = result.distanceKM / 30;
         console.log("nbKm par jour :", nbKm);
@@ -64,15 +64,12 @@ async function DateLivraison(zipcode) {
         let parseNb = parseInt(kmArr);
 
         // je calcul le 1er nombre (1 jour de prepa, + le 1er num de distance + 1 (pour arrondir au supp))
-        nbJour = nbJour + (parseNb + 1);
-        console.log(`Nombre de jour ${nbJour}`);
+        jour = nbJourPrepa + (parseNb + 1);
+        console.log(`Nombre de jour ${jour}`);
 
-        let jour = document.getElementById('jour');
-        jour.textContent = 'Nouveau Titre';
-        document.getElementById('jour').textContent = nbJour + " jours";
+         let ajoutFichier = document.getElementById('jour').textContent = jour + " jours";
 
         
-
     } catch (error) {
         console.error(error.Message);
     }
