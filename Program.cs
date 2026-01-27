@@ -7,6 +7,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         option.LoginPath = "/Acces/Connexion";
         option.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+        option.AccessDeniedPath = "/Home/HandleError/403";
     }
 );
 
@@ -31,6 +32,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+app.UseStatusCodePagesWithReExecute("/Home/HandleError/{0}");
 app.UseStaticFiles();
 
 app.UseCookiePolicy();
@@ -42,6 +44,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     //pattern: "{controller=Home}/{action=Index}/{id?}");
-    pattern: "{controller=produit}/{action=Index}/{id?}");
+    pattern: "{controller=Produit}/{action=Index}/{id?}");
 
 app.Run();

@@ -9,6 +9,8 @@ using System.Security.Claims;
 
 namespace RevendTout.Controllers
 {
+
+    [AutoValidateAntiforgeryToken]
     public class PanierController : Controller
     {
         // attribut stockant la chaîne de connexion à la base de données

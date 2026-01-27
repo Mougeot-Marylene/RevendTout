@@ -6,6 +6,8 @@ using RevendTout.ViewModels;
 
 namespace RevendTout.Controllers
 {
+
+    [AutoValidateAntiforgeryToken]
     public class CategorieController : Controller
     {
         // attribut stockant la chaîne de connexion à la base de données

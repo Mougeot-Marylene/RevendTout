@@ -16,6 +16,8 @@ using System.Text;
 
 namespace RevendTout.Controllers
 {
+
+    [AutoValidateAntiforgeryToken]
     public class AccesController : Controller
     {// attribut stockant la chaîne de connexion à la base de données
         private readonly string _connexionString;
