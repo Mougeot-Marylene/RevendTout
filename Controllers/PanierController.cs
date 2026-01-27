@@ -59,41 +59,53 @@ namespace RevendTout.Controllers
                             panierId = connexion.ExecuteScalar<int>(insertPanier, new { id }, transaction: transaction);
                         }
 
-                        // 2. Récupérer produits + images + quantités en une seule requête avec LEFT JOIN
+                        // 2. Récupérer produits + images + tailles + quantités en une seule requête
                         string query = @"
-                    SELECT p.id, p.nom, p.prix, p.reduction,
-                           i.id, i.produit_id, i.url, i.description,
-                           pa.quantite
-                    FROM Produit_paniers pa
-                    LEFT JOIN Produits p ON pa.produit_id = p.id
-                    LEFT JOIN Images i ON p.id = i.produit_id
-                    WHERE pa.panier_id = @panierId
-                    ORDER BY p.id";
+                                      SELECT 
+                                            p.id, p.nom, p.prix, p.reduction,
+                                            i.id AS ImageId, i.produit_id AS ImageProduitId, i.url, i.description AS ImageDescription,
+                                            t.id AS Id, t.nom AS Nom,
+                                            pa.quantite
+                                        FROM Produit_paniers pa
+                                        LEFT JOIN Produits p ON pa.produit_id = p.id
+                                        LEFT JOIN Images i ON p.id = i.produit_id
+                                        LEFT JOIN Produit_tailles pt ON p.id = pt.produit_id
+                                        LEFT JOIN Tailles t ON pt.taille_id = t.id
+                                        WHERE pa.panier_id = @panierId
+                                        ORDER BY p.id";
 
                         var produitDict = new Dictionary<int, Produit>();
-                        var quantiteDict = new Dictionary<int, int>(); // Pour stocker quantités par produit
+                        var quantiteDict = new Dictionary<int, int>();
 
-                        var result = connexion.Query<Produit, Image, int, Produit>(
+                        var result = connexion.Query<Produit, Image, Taille, int, Produit>(
                             query,
-                            (p, i, quantite) =>
+                            (p, i, t, quantite) =>
                             {
                                 if (!produitDict.TryGetValue(p.Id, out var prodEntry))
                                 {
                                     prodEntry = p;
                                     prodEntry.Images = new List<Image>();
+                                    prodEntry.Tailles = new List<Taille>();
                                     produitDict.Add(p.Id, prodEntry);
                                     quantiteDict[p.Id] = quantite;
                                 }
+
                                 if (i != null)
                                     prodEntry.Images.Add(i);
+
+                                // Ajout de la taille uniquement si pas déjà dans la liste (évite doublons)
+                                if (t != null && !prodEntry.Tailles.Any(ta => ta.Id == t.Id))
+                                    prodEntry.Tailles.Add(t);
+
                                 return prodEntry;
                             },
                             new { panierId },
-                            splitOn: "id,quantite",
+                            splitOn: "ImageId,Id,quantite",
                             transaction: transaction
                         );
 
-                        // 3. Construire le ViewModel panier avec produits et quantités
+
+                        // 3. Construire le ViewModel panier
                         var panier = new PanierViewModel();
                         panier.Produits = new Dictionary<Produit, int>();
 
@@ -102,7 +114,7 @@ namespace RevendTout.Controllers
                             panier.Produits.Add(prod, quantiteDict[prod.Id]);
                         }
 
-                        // 4. Calculs totaux comme avant
+                        // 4. Calculs totaux
                         int totalArticles = 0;
                         decimal totalPrix = 0m;
                         decimal totalReduction = 0m;
@@ -535,7 +547,7 @@ namespace RevendTout.Controllers
 
                             // On remplace le num de l'iindex par le nouveau chiffre
                             tabNumCB[index] = nouvNum.ToString()[0];
-                            
+
                         }
 
                         // Reconstruire la chaîne modifiée
@@ -558,7 +570,7 @@ namespace RevendTout.Controllers
                         {
                             throw new InvalidOperationException($"Votre carte bancaire n'est pas valide, veuillez ressayer.");
                         }
-                      
+
                         // compte le nombre de numero de la carte
                         int CountNumCB = (tabNumCB.Length);
                         //l'index commence à 0 donc ça fait 15 chiffres

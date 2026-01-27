@@ -12,7 +12,8 @@ namespace RevendTout.ViewModels
         public decimal TotalPrix { get; set; }
         public decimal TotalReduction { get; set; }
 
-        public Utilisateur Utilisateur { get; set; }
+        public Utilisateur? Utilisateur { get; set; }
+
 
 
     }
