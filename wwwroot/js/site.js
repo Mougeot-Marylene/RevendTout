@@ -39,6 +39,7 @@ async function DateLivraison(zipcode) {
     console.log("Code postal :", zipcode);
     const url = "https://api-filrouge.2isa.eu/api/v1/shippingaddress?zipcode=" + zipcode;
     try {
+        // await attend le fectch, fetch c'est une demande
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
