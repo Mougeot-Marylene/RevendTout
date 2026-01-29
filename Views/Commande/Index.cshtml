@@ -94,7 +94,12 @@
 
 <script src="~/js/site.js"></script>
 
+@* 
+ // Lorsque la page HTML est  chargée on exécute la fonction passée en paramètre. *@
 <script>
+    // Appelle la fonction DateLivraison en lui passant la valeur de la variable ViewData["zipCode"]
+        // ViewData["zipCode"] est une donnée envoyée par le serveur ASP.NET MVC vers la vue.
+        // Cette donnée est insérée dans le code JavaScript en tant que chaîne de caractères.
     document.addEventListener('DOMContentLoaded', function () {
         DateLivraison("@ViewData["zipCode"]");
     });

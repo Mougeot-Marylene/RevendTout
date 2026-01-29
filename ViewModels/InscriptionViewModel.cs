@@ -29,5 +29,11 @@ namespace RevendTout.ViewModels
 
         public Adresse? Adresse { get; set; }
 
+        [Required(ErrorMessage = "Vous devez accepter le RGPD")]
+        public bool AccepteRGPD { get; set; }
+
+        [Required(ErrorMessage = "Vous devez accepter les CGV")]
+        public bool AccepteCGV { get; set; }
+
     }
 }

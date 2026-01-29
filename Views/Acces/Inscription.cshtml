@@ -98,6 +98,25 @@
                 <br />
             </div>
         </div>
+
+        <hr />
+        <div>
+            <input asp-for="AccepteRGPD" type="checkbox" />
+            <label asp-for="AccepteRGPD">
+                J’accepte la politique RGPD
+            </label>
+            <span asp-validation-for="AccepteRGPD" class="text-danger"></span>
+        </div>
+
+        <div>
+            <input asp-for="AccepteCGV" type="checkbox" />
+            <label asp-for="AccepteCGV">
+                J’accepte les Conditions Générales de Vente
+            </label>
+            <span asp-validation-for="AccepteCGV" class="text-danger"></span>
+        </div>
+
+
         <hr />
         <div class="bloc_btn">
             <input type="submit" value="Créer mon compte" class="btn-bg-vert" />
