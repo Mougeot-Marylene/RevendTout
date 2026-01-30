@@ -68,7 +68,9 @@ async function DateLivraison(zipcode) {
         jour = nbJourPrepa + (parseNb + 1);
         console.log(`Nombre de jour ${jour}`);
 
-         let ajoutFichier = document.getElementById('jour').textContent = jour + " jours";
+        Array.from(document.getElementsByClassName('jour')).forEach(span => {
+            span.textContent = jour + " jours";
+        });
 
         
     } catch (error) {
