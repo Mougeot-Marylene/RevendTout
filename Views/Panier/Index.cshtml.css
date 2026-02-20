@@ -1,0 +1,109 @@
+
+/* ============================= */
+/* TITRE */
+/* ============================= */
+h1 {
+    text-align: center;
+    border: 1px solid var(--couleur_verte);
+    border-radius: 5px 5px 0 0;
+    padding: 10px;
+}
+
+/* ============================= */
+/* card article */
+/* ============================= */
+
+section {
+    display: flex;
+    justify-content: space-between;
+    gap: 90px;
+}
+
+
+.bloc_produit {
+    width: 100%;
+}
+
+/* ============================= */
+/* card produit */
+/* ============================= */
+
+.card_produit {
+    display: flex;
+    gap: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    padding: 20px;
+}
+
+    /* image */
+    .card_produit img {
+        width: 40%;
+    }
+
+/*bloc des données */
+.bloc_donnees {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    flex: 1; /* prend la place disponible*/
+}
+
+.bloc_donnees_1 {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; /* prend toute la largeur du parent*/
+}
+
+/* bloc des prix */
+.prix {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.prix .c_rouge, .prix_sr {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* bloc deq quantites */
+.bloc_quantite {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.quantite {
+    border: 1px solid var( --couleur_verte);
+    padding: 5px 20px;
+}
+
+.btn_quantite {
+    border: 1px solid var( --couleur_verte);
+    padding: 5px 20px;
+    width: 10px;
+}
+
+/* ============================= */
+/* partie récap */
+/* ============================= */
+
+.bloc_recap {
+    background-color: #fafafa;
+    width: 100%;
+    padding: 30px;
+}
+
+hr {
+    color: var(--couleur_verte);
+}
+
+.recap_prix{display: flex; justify-content:space-between;}
+
+.btn_recap {
+    background-color: var(--couleur_verte);
+    color: var(--couleur_blanche);
+    padding: 10px;
+    border: none;
+}

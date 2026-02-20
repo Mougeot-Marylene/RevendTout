@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <!-- CSS commun -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/RevendTout.styles.css" asp-append-version="true" />
+
+    <!-- CSS spécifique aux vues -->
+    @RenderSection("Styles", required: false)
+</head>
+<body style="height: 100vh;">
+
+    <header>
+        <nav class="navbar ">
+            <a asp-area="" asp-controller="Produit" asp-action="Index"><img class="logo" src="/images/logo.png" alt="Logo" /></a>
+        </nav>
+    </header>
+    <br />
+    <main>
+        <div class="bloc_catalogue">
+            <div class="bloc_nav">
+                <div class="catalogue">
+                    <img width="30" height="30" src="https://img.icons8.com/ios/50/control-panel--v2.png" alt="control-panel--v2" />
+                    <h4> <a class="c_verte" asp-controller="Produit" asp-action="Index">Site</a></h4>
+                </div>
+
+                <br />
+                <br />
+
+                <div class="catalogue">
+                    <img width="30" height="30" src="https://img.icons8.com/external-prettycons-lineal-prettycons/49/external-products-user-interface-vol-3-prettycons-lineal-prettycons.png" alt="external-products-user-interface-vol-3-prettycons-lineal-prettycons" />
+                    <h4> <a class="c_verte" asp-controller="Produit" asp-action="Admin_Index">Produits</a></h4>
+                </div>
+
+                <div class="catalogue">
+                    <img width="30" height="30" src="https://img.icons8.com/ios/50/opened-folder.png" alt="opened-folder" />
+                    <h4> <a class="c_verte" asp-controller="Categorie" asp-action="Index">Catégories</a></h4>
+                </div>
+
+
+                <div class="catalogue">
+                    <img width="30" height="30" src="https://img.icons8.com/ios/50/opened-folder.png" alt="opened-folder" />
+                    <h4> <a class="c_verte" asp-controller="Taille" asp-action="Index">Tailles</a></h4>
+                </div>
+
+                <div class="catalogue">
+                    <img width="30" height="30" src="https://img.icons8.com/ios/50/conference-call--v1.png" alt="conference-call--v1" />
+                    <h4> <a class="c_verte" asp-controller="Utilisateur" asp-action="Index">Utilisateurs</a></h4>
+                </div>
+            </div>
+
+            <div>
+                <div class="c_verte">
+                    <div>@User.Identity!.Name</div>
+                    <div>Administrateur</div>
+                </div>
+                <br />
+                <div>
+                    <a class="c_rouge" asp-area="" asp-controller="Acces"
+                       asp-action="Deconnexion">Déconnexion</a>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="block_donnes">
+            @RenderBody()
+        </div>
+
+    </main>
+
+    <footer class="footer_admin">
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

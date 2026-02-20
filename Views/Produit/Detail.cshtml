@@ -1,0 +1,103 @@
+﻿@model Produit // la vue s'attend à recevoir un produit
+<div>
+    <a asp-area=""
+       asp-controller="produit"
+       asp-action="Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+<br />
+<h1>Détail de : <span class="c_verte">@Model.Nom</span></h1>
+
+<section class="cont_prod">
+
+    <!-- Galerie produit -->
+    <section class="carousel" aria-label="Galerie d’images du produit">
+
+        @{
+            int imageCount = Model.Images?.Count ?? 0;
+        }
+
+        <!-- Boutons radio (invisibles) -->
+        @for (int i = 0; i < imageCount; i++)
+        {
+            <input type="radio" name="carousel" id="img@(i + 1)" @(i == 0 ? "checked" : "") />
+        }
+
+        <!-- Images -->
+        <div class="carousel-images">
+            @if (Model.Images != null && Model.Images.Any())
+            {
+                foreach (var img in Model.Images)
+                {
+                    <img src="@img.Url" alt="@img.Description" />
+                }
+            }
+            else
+            {
+                <p>Aucune image disponible.</p>
+            }
+        </div>
+
+        <!-- Boutons -->
+        <div class="carousel-buttons">
+            @for (int i = 0; i < imageCount; i++)
+            {
+                <label for="img@(i + 1)"></label>
+            }
+        </div>
+
+    </section>
+
+
+    <!-- Infos produit -->
+    <article class="card">
+
+        <section class="div_desc">
+            <h2>@Model.Nom</h2>
+            <p>@Model.Desc_courte</p>
+            <p>@Model.Description</p>
+            @foreach (var taille in Model.Tailles.DistinctBy(t => t.Id))
+            {
+                <p>Taille  : @taille.Nom</p>
+            }
+        </section>
+
+        <!-- Prix -->
+        <section class="cont_prix">
+            @if (Model.Reduction > 0)
+            {
+                var red = Model.Prix - Model.Reduction;
+                <div class="prix_red">
+                    <p class="text-barre">Prix : @Model.Prix€</p>
+                    <p class="c_rouge">-@Model.Reduction€</p>
+                </div>
+                <p class="c_verte prix_final">@red€</p>
+            }
+            else
+            {
+                <p class="c_verte prix_final">@Model.Prix€</p>
+            }
+        </section>
+
+        <!-- Achat -->
+        <section class="cont_achat">
+            <div>
+                <a asp-controller="Panier" asp-action="AjouterAuPanier"  asp-route-id="@Model.Id" class="btn_achat">Ajouter au panier</a>
+            </div>
+
+
+            @if (Model.Quantite > 0)
+            {
+                <p class="c_verte">En stock</p>
+            }
+            else
+            {
+                <p class="c_rouge">Indisponible</p>
+            }
+        </section>
+
+    </article>
+
+</section>

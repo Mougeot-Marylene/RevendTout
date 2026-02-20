@@ -1,0 +1,59 @@
+﻿/* ============================= */
+/* TITRE */
+/* ============================= */
+h1 {
+    text-align: center;
+    border: 1px solid var(--couleur_verte);
+    border-radius: 5px 5px 0 0;
+    padding: 10px;
+}
+
+/* ============================= */
+/* CONTENEUR GLOBAL */
+/* ============================= */
+.cont_prod {
+    display: flex;
+    gap: 40px;
+    margin-top: 30px;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+/* ============================= */
+/* FORMULAIRE PRODUIT */
+/* ============================= */
+
+
+    .form-produit table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .form-produit td {
+        padding: 8px;
+        vertical-align: middle;
+    }
+
+    /* Inputs */
+    .form-produit input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box; /* important pour éviter les débordements */
+    }
+
+/* Bouton envoyer */
+.btn-bg-vert {
+    margin-top: 15px;
+    background-color: var(--couleur_verte);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+    .btn-bg-vert:hover {
+        background-color: #3d7669;
+    }
+

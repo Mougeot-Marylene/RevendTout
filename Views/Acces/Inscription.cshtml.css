@@ -1,0 +1,68 @@
+﻿﻿ /* ============================= */
+/* TITRE */
+/* ============================= */
+h1 {
+    text-align: center;
+    padding: 10px;
+}
+
+.slogan {
+    text-align: center;
+}
+
+/* ============================= */
+/* CONTENEUR GLOBAL */
+/* ============================= */
+.cont_prod {
+    display: flex;
+    padding-top: 30px;
+    justify-content:space-evenly;
+}
+
+/* ============================= */
+/* FORMULAIRE  */
+/* ============================= */
+
+
+.bloc_contenu {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Bouton  */
+.bloc_btn {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn-bg-vert {
+    margin-top: 15px;
+    background-color: var(--couleur_verte);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+
+.btn-bg-vert:hover {
+    background-color: var(--couleur_verte);
+}
+
+.btn-bg-rouge {
+    margin-top: 15px;
+    background-color: var(--couleur_rouge);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.btn-bg-rouge:hover {
+    background-color: var(--couleur_rouge) !important;
+}

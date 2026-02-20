@@ -1,0 +1,106 @@
+﻿@using RevendTout.ViewModels
+@model List<CommandeViewModel>
+
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
+<div>
+    <a asp-area=""
+       asp-controller="produit"
+       asp-action="Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+
+
+<br />
+
+<section>
+
+    <div>
+        <h3 class="c_noir">Mes commandes</h3>
+
+        <br />
+
+        <table>
+            <tr>
+                <th>Numéro</th>
+                <th>Date</th>
+                <th>Nombre articles</th>
+                <th>Montant</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                if (item.Statut == "En cours")
+                {
+
+                    <tr>
+                        <td>N°@item.Numero - @item.Statut</td>
+                        <td>@item.Date</td>
+                        <td>@item.NombreArticles</td>
+                        <td>@item.Montant</td>
+                        
+                    </tr>
+                    <tr>
+                        <th colspan="4" class="c_verte">Livraison approximative : <span class="c_noir jour"> jours</span>  </th>
+
+                    </tr>
+                }
+
+            }
+           
+        </table>
+
+    </div>
+    <br />
+    <hr />
+
+    <h5 class="c_noir">Commande finalisées</h5>
+
+    <div>
+
+        <table>
+            <tr>
+                <th>Numéro</th>
+                <th>Date</th>
+                <th>Nombre articles</th>
+                <th>Montant</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                if (item.Statut == "Expédiée")
+                {
+
+                    <tr>
+                        <td>N°@item.Numero - @item.Statut</td>
+                        <td>@item.Date</td>
+                        <td>@item.NombreArticles</td>
+                        <td>@item.Montant</td>
+                    </tr>
+                }
+            }
+        </table>
+
+    </div>
+
+
+</section>
+
+<script src="~/js/site.js"></script>
+
+@* 
+ // Lorsque la page HTML est  chargée on exécute la fonction passée en paramètre. *@
+<script>
+    // Appelle la fonction DateLivraison en lui passant la valeur de la variable ViewData["zipCode"]
+        // ViewData["zipCode"] est une donnée envoyée par le serveur ASP.NET MVC vers la vue.
+        // Cette donnée est insérée dans le code JavaScript en tant que chaîne de caractères.
+    document.addEventListener('DOMContentLoaded', function () {
+        DateLivraison("@ViewData["zipCode"]");
+    });
+</script>

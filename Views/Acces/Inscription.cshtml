@@ -1,0 +1,136 @@
+﻿@using RevendTout.ViewModels
+@model InscriptionViewModel
+
+
+@{
+    ViewData["Title"] = "Création de compte";
+}
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
+
+
+<h1>Bienvenue chez RevendTout <img width="38" height="38" src="https://img.icons8.com/emoji/48/waving-hand-emoji.png" alt="waving-hand-emoji" /></h1>
+<p class="c_verte slogan">Vente de vêtements et accessoires</p>
+
+<hr />
+<section>
+
+    <form asp-action="Inscription" asp-controller="Acces" method="post">
+        <div class="cont_prod">
+            <div>
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.Nom"></label>
+                    <input class="input_style" asp-for="@Model.Nom" placeholder="Nom" />
+                    <span asp-validation-for="@Model.Nom" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.Prenom"></label>
+                    <input class="input_style" asp-for="@Model.Prenom" placeholder="Prenom" />
+                    <span asp-validation-for="@Model.Prenom" class="text-danger"></span>
+                </div>
+                <br />
+
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.Adresse!.Numero_rue"></label>
+                    <input class="input_style" asp-for="@Model.Adresse!.Numero_rue" placeholder="Numéro de rue" />
+                    <span asp-validation-for="@Model.Adresse!.Numero_rue" class="text-danger"></span>
+                </div>
+                <br />
+
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.Adresse!.Nom_rue"></label>
+                    <input class="input_style" asp-for="@Model.Adresse!.Nom_rue" placeholder="Nom de rue" />
+                    <span asp-validation-for="@Model.Adresse!.Nom_rue" class="text-danger"></span>
+                </div>
+                <br />
+
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.Adresse!.Code_postal"></label>
+                    <input class="input_style" asp-for="@Model.Adresse!.Code_postal" placeholder="Code postal" />
+                    <span asp-validation-for="@Model.Adresse!.Code_postal" class="text-danger"></span>
+                </div>
+
+                <br />
+            </div> 
+            <div>
+
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.Adresse!.Ville"></label>
+                    <input class="input_style" asp-for="@Model.Adresse!.Ville" placeholder="Ville" />
+                    <span asp-validation-for="@Model.Adresse!.Ville" class="text-danger"></span>
+                </div>
+                <br />
+
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.Adresse!.Pays"></label>
+                    <input class="input_style" asp-for="@Model.Adresse!.Pays" placeholder="Pays" />
+                    <span asp-validation-for="@Model.Adresse!.Pays" class="text-danger"></span>
+                </div>
+                <br />
+
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.Email"></label>
+                    <input class="input_style" asp-for="@Model.Email" placeholder="Mail" />
+                    <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                </div>
+                <br />
+
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.MotDePasse"></label>
+                    <input class="input_style" asp-for="@Model.MotDePasse" placeholder="Mot de passe" type="password" />
+                    <span asp-validation-for="@Model.MotDePasse" class="text-danger"></span>
+                </div>
+
+                <br />
+
+                <div class="bloc_contenu">
+                    <label class="c_verte" asp-for="@Model.ConfirmMotDePasse"></label>
+                    <input class="input_style" asp-for="@Model.ConfirmMotDePasse" placeholder="Confirmer le mot de passe" type="password" />
+                    <span asp-validation-for="@Model.ConfirmMotDePasse" class="text-danger"></span>
+                </div>
+                <br />
+            </div>
+        </div>
+
+        <hr />
+        <div>
+            <input asp-for="AccepteRGPD" type="checkbox" />
+            <label asp-for="AccepteRGPD">
+                J’accepte la politique RGPD
+            </label>
+            <span asp-validation-for="AccepteRGPD" class="text-danger"></span>
+        </div>
+
+        <div>
+            <input asp-for="AccepteCGV" type="checkbox" />
+            <label asp-for="AccepteCGV">
+                J’accepte les Conditions Générales de Vente
+            </label>
+            <span asp-validation-for="AccepteCGV" class="text-danger"></span>
+        </div>
+
+
+        <hr />
+        <div class="bloc_btn">
+            <input type="submit" value="Créer mon compte" class="btn-bg-vert" />
+            <input type="reset" value="Annuler" class="btn-bg-rouge" />
+        </div>
+        <br />
+    </form>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

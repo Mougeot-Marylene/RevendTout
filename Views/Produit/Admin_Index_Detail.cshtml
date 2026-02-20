@@ -1,0 +1,146 @@
+﻿@model Produit // la vue s'attend à recevoir un produit
+@{
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
+
+<div>
+    <a asp-area=""
+       asp-controller="produit"
+       asp-action="Admin_Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+<br />  
+<h1>Détail de : <span class="c_verte">@Model.Nom</span></h1>
+
+<section class="cont_prod">
+
+    <!-- Galerie produit -->
+    <section class="carousel" aria-label="Galerie d’images du produit">
+
+        @{
+            int imageCount = 0;
+
+            if (Model.Images != null)
+            {
+                imageCount = Model.Images.Count; // je récupére le nombre d’images dans la collection Model.Images
+            }
+        }
+
+        @*  boucle qui répète le bloc de code autant de fois qu’il y a d’images dans la liste *@
+        @for (int i = 0; i < imageCount; i++)
+        {
+            <input type="radio" name="carousel" id="img@(i + 1)" @(i == 0 ? "checked" : "") />
+        }
+
+        <figure class="carousel-images">
+            @*Any =>  Est-ce qu'il y a au moins une image dans la collection Images *@
+            @if (Model.Images != null && Model.Images.Any())
+            {
+                foreach (var img in Model.Images)
+                {
+                    <img src="@img.Url" alt="@img.Description" />
+                }
+            }
+            else
+            {
+                <p>Aucune image disponible.</p>
+            }
+        </figure>
+
+        <nav class="carousel-buttons" aria-label="Navigation images">
+            @for (int i = 0; i < (Model.Images?.Count ?? 0); i++)
+            {
+                <label for="img@(i + 1)"></label>
+            }
+        </nav>
+
+    </section>
+
+
+    <!-- Infos produit -->
+    <article class="card">
+
+        <section class="div_desc">
+            <h2>@Model.Nom</h2>
+            <p>@Model.Desc_courte</p>
+            <p>@Model.Description</p>
+
+            @foreach (var taille in Model.Tailles.DistinctBy(t => t.Id))
+            {
+                <p>Taille  : @taille.Nom</p>
+            }
+      
+        </section>
+
+        <!-- Prix -->
+        <section class="cont_prix">
+            @if (Model.Reduction > 0)
+            {
+                var red = Model.Prix - Model.Reduction;
+                <div class="prix_red">
+                    <p class="text-barre">Prix : @Model.Prix€</p>
+                    <p class="c_rouge">-@Model.Reduction€</p>
+                </div>
+                <p class="c_verte prix_final">@red€</p>
+            }
+            else
+            {
+                <p class="c_verte prix_final">@Model.Prix€</p>
+            }
+        </section>
+
+        <!-- Achat -->
+        <section class="cont_achat">
+            <div class="div_btn">
+                <a asp-area=""
+                   asp-controller="Produit"
+                   asp-action="Modifier"
+                   asp-route-id="@Model.Id"
+                   class="link-success">
+                    Modifier
+                </a>
+
+                <a asp-area=""
+                   asp-controller="Produit"
+                   asp-action="Archiver"
+                   asp-route-id="@Model.Id"
+                   class="btnSuppr link-danger">
+                    Archiver
+                </a>
+            </div>
+
+            <div>
+                Nombre de vente :<span class="c_verte"> @Model.Score_vente</span>
+            </div>
+
+
+            @if (Model.Quantite > 0)
+            {
+                <p>En stock :<span class="c_verte"> @Model.Quantite</span></p>
+
+            }
+            else
+            {
+                <p class="c_rouge">Indisponible</p>
+            }
+        </section>
+
+    </article>
+
+
+
+</section>
+

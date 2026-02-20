@@ -1,0 +1,173 @@
+﻿@using RevendTout.ViewModels
+@model PanierViewModel
+
+@{
+    ViewData["Title"] = "Panier";
+}
+
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
+
+<div>
+    <a asp-area=""
+       asp-controller="Panier"
+       asp-action="Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+<br />
+<h1>Paiement</h1>
+
+<br />
+
+
+<section>
+    <div class="bloc_produit">
+
+
+        <div class="card_produit">
+
+            <div class="bloc_donnees">
+
+                <div>
+
+                    <div class="c_verte bolder">Adresse de livraison</div>
+                    <br />
+                    <address>
+                        <div class="bolder">@Model.Utilisateur.Nom @Model.Utilisateur.Prenom</div>
+                        <br />
+                        <div> @Model.Utilisateur.Adresse?.Numero_rue @Model.Utilisateur.Adresse?.Nom_rue  </div>
+                        <div> @Model.Utilisateur.Adresse?.Code_postal @Model.Utilisateur.Adresse?.Ville, @Model.Utilisateur.Adresse?.Pays  </div>
+                    </address>
+
+                </div>
+
+
+
+            </div>
+        </div>
+        <br />
+        <div class="card_produit">
+
+            <div class="bloc_donnees">
+
+                <div class="c_verte bolder">Moyen de paiement</div>
+
+
+                <div class="bloc_donnees_1">
+                    <form asp-controller="Panier" asp-action="Paiementverif" method="post">
+                        <div class="cb">
+                            <div>
+                                <label for="NumCB">Numéro de la carte*</label><br>
+                                <input type="text" id="NumCB" name="NumCB" required><br>
+                            </div>
+                            <div class="img_bc">
+                                <img width="50" height="50" src="https://img.icons8.com/ios/50/bank-card-back-side--v1.png" alt="bank-card-back-side--v1" />
+                            </div>
+                        </div>
+                        <br />
+
+                        <div>
+                            <label for="nom_cb">Titulaire de la carte*</label><br>
+                            <input type="text" id="nom_cb" name="nom_cb" required><br>
+                        </div>
+                        <br />
+
+                        <div>
+                            <label for="date_cb">Date d'expiration*</label><br>
+                            <input type="date" id="date_cb" name="date_cb" required><br>
+                        </div>
+                        <br />
+
+                        <div class="cb">
+                            <div>
+                                <label for="code_cb">Code de vérification de la carte*</label><br>
+                                <input type="text" id="code_cb" name="code_cb" required>
+                            </div><br>
+                            <div class="img_bc">
+                                <img width="50" height="50" src="https://img.icons8.com/ios-filled/50/card-verification-value.png" alt="card-verification-value" />
+                            </div>
+                        </div>
+                        <br />
+
+                        <input type="submit" value="Confirmer la commande" class="btn-bg-vert" />
+                    </form>
+
+
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div class="bloc_recap">
+        <h3 class="text-center c_noir">Récapitulatif</h3>
+        <br />
+
+        <div class="recap_prix">
+            <div class="c_noir">Sous_total (avec remise)</div>
+            <div class="c_noir">@Model.TotalPrix &#8364</div>
+        </div>
+        <br />
+        <hr />
+
+        <br />
+
+        @foreach (var item in Model.Produits)
+        {
+            var prixTotal = (item.Key.Prix - item.Key.Reduction) * item.Value;
+            <div class="recap_prix">
+
+                @{
+                    var premiereImage = item.Key.Images.OrderBy(img => img.Id).FirstOrDefault();
+                    string urlImage = premiereImage != null ? premiereImage.Url : "/images/image_defaut_produit.webp";
+                }
+
+                <img class="img_prod" src="@urlImage" alt="Image du produit @item.Key.Nom" />
+                <div>
+                    <div class="c_noir">@item.Key.Nom</div>
+                    <div class="c_noir">Quantite :@item.Value</div>
+                    <div class="c_noir">Prix : @prixTotal</div>
+                </div>
+            </div>
+            <br />
+        }
+
+        <hr />
+
+        <div>
+            <div class="recap_prix_frai">
+                <div class="c_noir">Frais de livraison</div>
+                <div class="c_noir">Offert</div>
+            </div>
+            <br />
+
+
+            <div class="recap_prix_frai">
+                <div class="c_noir  fs-3">Total à payer</div>
+                <div class="c_verte bolder fs-3">@Model.TotalPrix &#8364</div>
+            </div>
+
+
+            <div class="c_noir recap_prix">Vous économisez <span class="c_rouge"> @Model.TotalReduction&#8364</span></div>
+            <br />
+
+            <hr />
+        </div>
+    </div>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

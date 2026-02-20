@@ -1,0 +1,5 @@
+﻿.btn_recherche {
+    background-color: var(--couleur_verte);
+    color: var(--couleur_blanche);
+    border: none;
+}

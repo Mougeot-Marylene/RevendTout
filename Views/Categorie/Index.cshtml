@@ -1,0 +1,84 @@
+﻿@model List<Categorie>
+
+@{
+    ViewData["Title"] = "Liste de catégories";
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
+
+@{
+    ViewData["Title"] = "Inscription";
+}
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p>@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p>@TempData["ValidateMessage"]</p>
+}
+
+<h1>Liste des catégories</h1>
+
+<div class="actions_top">
+    <a asp-area=""
+       asp-controller="Categorie"
+       asp-action="Nouveau"
+       class="btn_vert">
+        + Ajouter une catégorie
+    </a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Description</th>
+            <th scope="col">Afficher</th>
+            <th scope="col">Supprimer</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var categorie in Model!)
+        {
+            <tr>
+                <th scope="row">@categorie.Nom</th>
+                <td>@categorie.Description</td>
+                <td>
+                    <a
+                       asp-controller="Categorie"
+                       asp-action="Detail"
+                       asp-route-id="@categorie.Id"
+                       class="link-success">
+                        Détail
+                    </a>
+                </td>
+                <td>
+                    <a 
+                       asp-controller="Categorie"
+                       asp-action="Supprimer"
+                       asp-route-id="@categorie.Id"
+                       class="btnSuppr link-danger ">
+                        Supprimer
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="4"></th>
+        </tr>
+    </tfoot>
+</table>

@@ -1,0 +1,62 @@
+﻿@using RevendTout.ViewModels
+@model ConnexionViewModel
+
+@{
+    ViewData["Title"] = "Connexion";
+}
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
+
+
+
+<h1>Bienvenue chez RevendTout <img width="38" height="38" src="https://img.icons8.com/emoji/48/waving-hand-emoji.png" alt="waving-hand-emoji" /></h1>
+<p class="c_verte slogan">Vente de vêtements et accessoires</p>
+
+<hr />
+
+<section class="cont_prod">
+
+    <form asp-action="Connexion" asp-controller="Acces" method="post">
+
+        <div class="bloc_contenu">
+            <label class="c_verte" asp-for="@Model.Email"></label>
+            <input class="input_style" asp-for="@Model.Email" placeholder="Entrez votre mail" />
+            <span asp-validation-for="@Model.Email" class="text-danger"></span>
+        </div>
+        <br />
+
+        <div class="bloc_contenu">
+            <label class="c_verte" asp-for="@Model.MotDePasse"></label>
+            <input class="input_style" asp-for="@Model.MotDePasse" placeholder="Entrez votre mot de passe" type="password" />
+            <span asp-validation-for="@Model.MotDePasse" class="text-danger"></span>
+        </div>
+
+
+        <hr />
+        <div class="bloc_btn">
+            <input type="submit" value="Me connecter" class="btn-bg-vert" />
+            <input type="reset" value="Annuler" class="btn-bg-rouge" />
+        </div>
+        <br />
+        @if (Context.Request.Query.ContainsKey("ReturnURL"))
+        {
+            <input type="hidden" name="ReturnURL" value="@Context.Request.Query["ReturnURL"]">
+        }
+    </form>
+
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}
+

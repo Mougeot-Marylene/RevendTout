@@ -1,0 +1,55 @@
+﻿@model List<Utilisateur>
+@{
+    ViewData["Title"] = "Afficher utilisateurs";
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+@{
+    ViewData["Title"] = "Inscription";
+}
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
+
+<h1>Liste des utilisateurs</h1>
+<br />
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Prénom</th>
+            <th scope="col">Email</th>
+            <th scope="col">Afficher</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var utilisateur in Model!)
+        {
+            <tr>
+                <th scope="row">@utilisateur.Nom</th>
+                <td>@utilisateur.Prenom</td>
+                <td>@utilisateur.Email</td>
+                <td>
+                    <a asp-controller="Utilisateur"
+                       asp-action="Detail"
+                       asp-route-id="@utilisateur.Id"
+                       class="link-success">
+                        Détail
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="4"></th>
+        </tr>
+    </tfoot>
+</table>

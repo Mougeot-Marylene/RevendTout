@@ -1,0 +1,65 @@
+﻿/* CONTENEUR DES CARDS */
+.cont_card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+/* CARD */
+.card {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: box-shadow 0.3s;
+    background-color: #fff;
+
+}
+
+    .card:hover {
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+
+    /* IMAGE */
+    .card img {
+        width: 100%;
+        height: auto; /* garder les proportions */
+        max-height: 250px; /* limite la hauteur max */
+        border-radius: 5px 5px 0 0;
+        display: block;
+        object-fit: contain; /* l'image est contenue dans la boîte sans être coupée */
+        background-color: #f0f0f0; /* optionnel : couleur de fond si l'image est plus petite */
+    }
+
+
+/* CONTENU */
+.container {
+    padding: 8px 16px;
+}
+
+/* PRIX */
+.cont_prix {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .cont_prix a {
+        text-decoration: none;
+    }
+
+        .cont_prix a:hover {
+            color: var(--couleur_verte);
+            text-decoration: none;
+        }
+
+.cont_prix_red {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.prix_detail {
+    margin-top: -10px;
+}

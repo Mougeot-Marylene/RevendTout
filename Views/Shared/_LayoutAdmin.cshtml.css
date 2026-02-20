@@ -1,0 +1,67 @@
+﻿/* Empêche le scroll global */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* HEADER FIXE */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px; /* ajuste si besoin */
+    z-index: 100;
+    background: white;
+}
+
+/* FOOTER FIXE */
+.footer_admin {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px; /* ajuste si besoin */
+    background-color: var(--couleur_blanche);
+    box-shadow: 0 -.25rem .75rem rgba(0, 0, 0, .05);
+    z-index: 100;
+}
+
+/* ZONE CENTRALE */
+main {
+    position: fixed;
+    top: 70px; /* hauteur header */
+    bottom: 40px; /* hauteur footer */
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 30px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* MENU GAUCHE */
+.bloc_catalogue {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid var(--couleur_verte);
+    border-radius: 10px;
+    padding: 20px;
+}
+.catalogue {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* CONTENU CENTRAL (LE SEUL QUI SCROLLE) */
+.block_donnes {
+    flex: 1;
+    overflow-y: auto; /* scroll si menu trop grand */
+    padding: 20px;
+    box-sizing: border-box;
+}

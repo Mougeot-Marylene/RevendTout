@@ -1,0 +1,70 @@
+﻿@using RevendTout.ViewModels
+@model EditionCategorieViewModel
+
+@{
+    ViewData["Title"] = "Ajouter une catégorie";
+    Layout = "_LayoutAdmin";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/admin_index.css" asp-append-version="true" />
+}
+@if (ViewData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@ViewData["ValidateMessage"]</p>
+}
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p class="c_rouge">@TempData["ValidateMessage"]</p>
+}
+
+@if (TempData.ContainsKey("ValidateMessage"))
+{
+    <p>@TempData["ValidateMessage"]</p>
+}
+
+<div class="actions_top">
+    <a asp-area=""
+       asp-controller="Categorie"
+       asp-action="Index"
+       class="btn_vert">
+        Retour
+    </a>
+</div>
+
+<h1>Ajout d'une catégorie</h1>
+
+<br />
+
+<div class="cont_prod">
+
+    <form asp-controller="Categorie" asp-action="@Model.ActionType" method="post" class="form-produit">
+        <table>
+            <tr>
+                <td>
+                    <label class="c_verte" asp-for="@Model.Nom"></label>
+                    <br />
+                    <input asp-for="@Model.Nom" placeholder="Nom du produit" />
+                    <span asp-validation-for="@Model.Nom" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="c_verte" asp-for="@Model.Description"></label>
+                    <br />
+                    <input asp-for="@Model.Description" placeholder="Description du produit" />
+                    <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                </td>
+            </tr>
+        </table>
+        @* input de type caché,a vec les valeurs de ces 2 type, qui permets de les envoyer pour verifier si l'isbn est déjà utilisé ou pas  *@
+        <input type="hidden" asp-for="@Model.ActionType" />
+        <input type="hidden" asp-for="@Model.id" />
+
+        <input type="submit" value="Ajouter la catégorie" class="btn-bg-vert" />
+    </form>
+
+</div>
+@* !!!! pour pouvoir faire des TESTS de nos methode controller,(section Scripts ) il faut le mettre en commentaire (on desactive la validation côté client), car on à une validation côté client donc il faut faire attention (ex pour isbn) *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

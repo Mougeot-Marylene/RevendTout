@@ -1,0 +1,119 @@
+
+/* ============================= */
+/* TITRE */
+/* ============================= */
+h1 {
+    text-align: center;
+    border: 1px solid var(--couleur_verte);
+    border-radius: 5px 5px 0 0;
+    padding: 10px;
+}
+
+/* ============================= */
+/* card adresse + paiement */
+/* ============================= */
+
+section {
+    display: flex;
+    justify-content: space-between;
+    gap: 90px;
+}
+
+
+.bloc_produit {
+    width: 100%;
+}
+
+/* ============================= */
+/* card produit */
+/* ============================= */
+
+.card_produit {
+    display: flex;
+    gap: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    padding: 20px;
+}
+
+
+/*bloc des données */
+.bloc_donnees {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    flex: 1; /* prend la place disponible*/
+}
+
+.bloc_donnees_1 {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; /* prend toute la largeur du parent*/
+}
+
+
+.bloc_donnees[b-f5l09qhmwe] {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    flex: 1;
+}
+
+/* ============================= */
+/* partie paiement */
+/* ============================= */
+
+.cb {
+    display: flex;
+    gap: 10px;
+}
+
+.img_bc {
+    padding-top: 15px;
+}
+
+
+.btn-bg-vert {
+    margin-top: 15px;
+    background-color: var(--couleur_verte);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* ============================= */
+/* partie récap */
+/* ============================= */
+.bloc_recap {
+    background-color: #fafafa;
+    width: 100%;
+    padding: 30px;
+}
+
+hr {
+    color: var(--couleur_verte);
+}
+
+.recap_prix {
+    display: flex;
+    gap: 10px;
+}
+
+.recap_prix_frai {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn_recap {
+    background-color: var(--couleur_verte);
+    color: var(--couleur_blanche);
+    padding: 10px;
+    border: none;
+}
+
+.img_prod {
+    width: 10%
+}
